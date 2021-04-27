@@ -1,4 +1,5 @@
 from os import path
+from pprint import pprint
 import yaml
 from kubernetes import client, config
 from kubernetes.client import Configuration
@@ -23,19 +24,21 @@ class KubernetesDriver(object):
                 self._kubeconfig_yaml = yaml.safe_load(f)
         return self._kubeconfig_yaml
 
-    #@property
-    #def client(self):
-    #    return client.CoreV1Api()
-    def get_pods(self):
-        CoreV1Api = client.CoreV1Api()
-        ret = CoreV1Api.list_pod_for_all_namespaces(watch=False)
-        for i in ret.items:
-            print('%s\t%s\t%s' % (i.status.pod_ip, i.metadata.namespace, i.metadata.name))
+    def get_pods(self, namespace):
+        core_v1 = client.CoreV1Api()
+        pods = core_v1.list_pod_for_all_namespaces(watch=False)
+        for i in pods.items:
+            if(i.metadata.namespace == namespace):
+                print('%s\t%s\t%s' % (i.status.pod_ip, i.metadata.namespace, i.metadata.name))
     
     
-    def deploy(self, deployment_yaml):
+    def deploy(self, deployment_yaml, namespace):
         with open(path.join(path.dirname(__file__), deployment_yaml)) as f:
             dep = yaml.safe_load(f)
-            k8s_apps_v1 = client.AppsV1Api()
-            resp = k8s_apps_v1.create_namespaced_deployment(body=dep, namespace="default")
-            print("Deployment created. status='%s'" % resp.metadata.name)
+            apps_v1 = client.AppsV1Api()
+            try:
+                api_response = apps_v1.create_namespaced_deployment(body=dep, namespace=namespace)
+                pprint(api_response)
+                #print("Deployment created. status='%s'" % resp.metadata.name)
+            except client.exceptions.ApiException as e:
+                print("Deployment exception: %s" % e)
