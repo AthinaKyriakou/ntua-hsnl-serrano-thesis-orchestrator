@@ -1,8 +1,26 @@
 # ntua_diploma_thesis
 
-## Local Development
+## For Local Development in Linux
 
-### Kafka
+### Installations
+1. [Go](https://golang.org/dl/)
+2. [kind - Kubernetes in Docker](https://kind.sigs.k8s.io/docs/user/quick-start/)
+3. Project requirements (preferably in a Python virtual env):
+```bash
+pip install -r requirements.txt
+``` 
+
+### Useful for Kubernetes with kind
+
+Create a cluster:
+```bash	
+kind create cluster
+kind get clusters (dflt name for created clusters: kind)
+```
+To have terminal interaction with the created Kubernetes objects, mainly for debugging, install [kubectl](https://kubernetes.io/docs/reference/kubectl/kubectl/)
+
+
+### Useful for Kafka
 
 Run Docker Compose on a terminal
 ```bash
