@@ -1,4 +1,4 @@
-# ntua_diploma_thesis
+# [add thesis title]
 
 ## For Local Development in Linux
 
@@ -17,7 +17,7 @@ Create a cluster:
 kind create cluster
 kind get clusters (dflt name for created clusters: kind)
 ```
-To have terminal interaction with the created Kubernetes objects, mainly for debugging, install [kubectl](https://kubernetes.io/docs/reference/kubectl/kubectl/)
+To have terminal interaction with the created Kubernetes objects, mainly for debugging, install [kubectl](https://kubernetes.io/docs/reference/kubectl/kubectl/).
 
 
 ### Useful for Kafka
