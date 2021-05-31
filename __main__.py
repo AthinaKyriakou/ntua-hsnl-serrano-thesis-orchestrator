@@ -2,8 +2,6 @@ import sys
 from confluent_kafka.admin import AdminClient, NewTopic
 from app import app
 
-#/home/athina/python-virtual-environments/thesis/bin/python /home/athina/Desktop/thesis/code/ntua_diploma_thesis/__main__.py worker --loglevel=INFO
-
 sys.path.append('.')
 
 def main():
