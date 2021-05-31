@@ -18,7 +18,11 @@ pip install -r requirements.txt
 
 3. Start the app (entrypoint project/__main__.py): ```/home/athina/python-virtual-environments/thesis/bin/python /home/athina/Desktop/thesis/code/ntua_diploma_thesis/__main__.py worker --loglevel=INFO```
 
-4. Write to the orchestrator topic: ```kafkacat -b localhost:9092 -t orchestrator -P {"appUUID": "tmp", "serviceUUID": "hello1"}```
+4. Write to the orchestrator topic: ```kafkacat -b localhost:9092 -t orchestrator -P {"appUUID": "tmp", "serviceUUID": "hello"}```
+
+5. To check that everything that is written in the "orchestrator" topic is passed to the "kubernetes" topic, run each cmd on a terminal:
+```kafkacat -b localhost:9092 -t orchestrator```
+```kafkacat -b localhost:9092 -t kubernetes```
 
 ## Useful Commands
 
