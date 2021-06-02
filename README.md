@@ -31,7 +31,8 @@ pip install -r requirements.txt
 | Folder                            | Description                                                       |
 | --------------------------------- | ----------------------------------------------------------------- |
 | src/__main__.py                   | application entrypoint                                            |
-| src/app.py                        | creates an instance of the Faust library for stream processing    |
+| src/faust_app.py                  | creates an instance of the Faust for stream processing            |
+| src/flask_app.py                  | creates an instance of the Flask                                  |
 | src/drivers                       | top level dir of the drivers services                             |
 | src/drivers/agents.py             | faust async stream processors of drivers' topics                  |
 | src/drivers/kubernetes.py         | K8sDriver class to connect and interact with a kubernetes cluster |
