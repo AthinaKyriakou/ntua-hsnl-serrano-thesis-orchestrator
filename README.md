@@ -1,8 +1,6 @@
 # [add thesis title]
 
-## For Local Development in Linux
-
-### Installations
+## Installations (for local development in Linux)
 1. [Go](https://golang.org/dl/)
 2. [kind - Kubernetes in Docker](https://kind.sigs.k8s.io/docs/user/quick-start/)
 3. Project requirements (preferably in a Python virtual env):
@@ -18,9 +16,9 @@ pip install -r requirements.txt
 
 3. Start the app (entrypoint project/__main__.py): ```/home/athina/python-virtual-environments/thesis/bin/python /home/athina/Desktop/thesis/code/ntua_diploma_thesis/src/__main__.py worker --loglevel=INFO```
 
-4. Write to the orchestrator topic: 
-* ```kafkacat -b localhost:9092 -t orchestrator -P``` 
-* and then type ```{"appUUID": "tmp", "serviceUUID": "hello"}```
+4. Write to the resource optimization toolkit topic: 
+* ```kafkacat -b localhost:9092 -t resource_optimization_toolkit -P``` 
+* and then type ```1```
 
 5. To check that everything that is written in the "orchestrator" topic is passed to the "kubernetes" topic, run each cmd on a terminal:
 * ```kafkacat -b localhost:9092 -t resource_optimization_toolkit```
@@ -28,6 +26,18 @@ pip install -r requirements.txt
 * ```kafkacat -b localhost:9092 -t kubernetes```
 
 6. Check deployments in Kubernetes: ```kubectl get deployments```
+
+## Project Layout
+|             Folder                |                           Description                             |
+|             :----:                |                             :----:                                |
+| src/__main__.py                   | application entrypoint                                            |
+| src/app.py                        | creates an instance of the Faust library for stream processing    |
+| src/drivers                       | top level dir of the drivers services                             |
+| src/drivers/agents.py             | faust async stream processors of drivers' topics                  |
+| src/drivers/kubernetes.py         | K8sDriver class to connect and interact with a kubernetes cluster |
+| src/orchestrator                  | top level dir of the central orchestrator service                 |
+| src/orchestrator/models.py        | faust models to describe the data in streams                      |
+| src/resource_optimization_toolkit | top level dir of the resource optimization toolkit service        |
 
 ## Useful Commands
 
