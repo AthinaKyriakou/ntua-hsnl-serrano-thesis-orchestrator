@@ -29,7 +29,7 @@ pip install -r requirements.txt
 
 ## Project Layout
 |             Folder                |                           Description                             |
-|             :----:                |                             :----:                                |
+| --------------------------------- | ----------------------------------------------------------------- |
 | src/__main__.py                   | application entrypoint                                            |
 | src/app.py                        | creates an instance of the Faust library for stream processing    |
 | src/drivers                       | top level dir of the drivers services                             |
