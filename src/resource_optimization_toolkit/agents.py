@@ -1,11 +1,11 @@
-from app import app
+from faust_app import faust_app
 import yaml
 from src.orchestrator.models import OrchestratorPlan
 
-rto_topic = app.topic('resource_optimization_toolkit', value_type=int)
-orchestrator_topic = app.topic('orchestrator', value_type=OrchestratorPlan)
+rto_topic = faust_app.topic('resource_optimization_toolkit', value_type=int)
+orchestrator_topic = faust_app.topic('orchestrator', value_type=OrchestratorPlan)
         
-@app.agent(rto_topic)
+@faust_app.agent(rto_topic)
 async def process_requests(requests):
     async for r in requests:
         #print(f"Request received is {r}")

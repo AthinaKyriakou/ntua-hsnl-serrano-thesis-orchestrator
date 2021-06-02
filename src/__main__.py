@@ -1,12 +1,12 @@
 # project entry point
 import sys
 from confluent_kafka.admin import AdminClient, NewTopic
-from app import app
+from faust_app import faust_app
 
 sys.path.append('.')
 
 def main():    
-    print('\nCreate orchestrator and kubernetes topics.')
+    print('\n__main__ - creating kafka topics')
     admin_client = AdminClient({'bootstrap.servers': 'localhost:9092'})
     topic_list = []
     topic_list.append(NewTopic('resource_optimization_toolkit', 1, 1))
@@ -16,4 +16,4 @@ def main():
 
 if __name__ == '__main__':
     main()
-    app.main()
+    faust_app.main()

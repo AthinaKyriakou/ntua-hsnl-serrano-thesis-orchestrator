@@ -28,7 +28,7 @@ pip install -r requirements.txt
 6. Check deployments in Kubernetes: ```kubectl get deployments```
 
 ## Project Layout
-|             Folder                |                           Description                             |
+| Folder                            | Description                                                       |
 | --------------------------------- | ----------------------------------------------------------------- |
 | src/__main__.py                   | application entrypoint                                            |
 | src/app.py                        | creates an instance of the Faust library for stream processing    |
@@ -63,7 +63,7 @@ docker-compose exec broker kafka-topics \
 
 ### Kafkacat
 
-CLI used for debugging & testing. [Documentation] (https://docs.confluent.io/platform/current/app-development/kafkacat-usage.html)
+CLI used for debugging & testing. [Documentation](https://docs.confluent.io/platform/current/app-development/kafkacat-usage.html)
 
 Check a topic's content
 ```bash
