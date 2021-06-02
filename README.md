@@ -16,13 +16,18 @@ pip install -r requirements.txt
 
 2. Check that everything is up and running: ```docker-compose ps```
 
-3. Start the app (entrypoint project/__main__.py): ```/home/athina/python-virtual-environments/thesis/bin/python /home/athina/Desktop/thesis/code/ntua_diploma_thesis/__main__.py worker --loglevel=INFO```
+3. Start the app (entrypoint project/__main__.py): ```/home/athina/python-virtual-environments/thesis/bin/python /home/athina/Desktop/thesis/code/ntua_diploma_thesis/src/__main__.py worker --loglevel=INFO```
 
-4. Write to the orchestrator topic: ```kafkacat -b localhost:9092 -t orchestrator -P {"appUUID": "tmp", "serviceUUID": "hello"}```
+4. Write to the orchestrator topic: 
+* ```kafkacat -b localhost:9092 -t orchestrator -P``` 
+* and then type ```{"appUUID": "tmp", "serviceUUID": "hello"}```
 
 5. To check that everything that is written in the "orchestrator" topic is passed to the "kubernetes" topic, run each cmd on a terminal:
-```kafkacat -b localhost:9092 -t orchestrator```
-```kafkacat -b localhost:9092 -t kubernetes```
+* ```kafkacat -b localhost:9092 -t resource_optimization_toolkit```
+* ```kafkacat -b localhost:9092 -t orchestrator```
+* ```kafkacat -b localhost:9092 -t kubernetes```
+
+6. Check deployments in Kubernetes: ```kubectl get deployments```
 
 ## Useful Commands
 
@@ -53,8 +58,6 @@ CLI used for debugging & testing. [Documentation] (https://docs.confluent.io/pla
 Check a topic's content
 ```bash
 kafkacat -b localhost:9092 -t <topic_name>
-kafkacat -b localhost:9092 -t orchestrator
-kafkacat -b localhost:9092 -t kubernetes
 ```
 
 Write to a topic
@@ -86,3 +89,8 @@ tocheck:
 * [Python Client](https://github.com/kubernetes-client/python)
 * [Python Client API Endpoints](https://github.com/kubernetes-client/python/blob/master/kubernetes/README.md#documentation-for-api-endpoints)
 * [Get Started Kubernetes with Python](https://kubernetes.io/blog/2019/07/23/get-started-with-kubernetes-using-python/)
+
+### Faust
+* [The App - Define your Faust project](https://faust.readthedocs.io/en/latest/userguide/application.html#medium-large-projects): Spot the suggested structure of medium/large projects [here](https://faust.readthedocs.io/en/latest/userguide/application.html#medium-large-projects)
+* [Example of medium project structure implementation](https://www.8mincode.com/posts/how-to-stream-data-with-kafka-and-faust-streaming-pipeline/)
+* [Models, Serialization, and Codecs](https://faust.readthedocs.io/en/latest/userguide/models.html)

@@ -143,3 +143,6 @@
           - |
             apk add jq; 
             while [ 1 -eq 1 ];do sleep 60;done
+
+
+#TODO: add faust setup https://www.8mincode.com/posts/how-to-stream-data-with-kafka-and-faust-streaming-pipeline/
