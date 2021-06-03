@@ -1,7 +1,6 @@
 from os import path
 from pprint import pprint
 import yaml
-from confluent_kafka import Consumer, KafkaException, KafkaError
 from kubernetes import client
 from kubernetes.client import Configuration
 from kubernetes.config import kube_config
@@ -16,7 +15,7 @@ class K8sDriver(object):
         self._kubeconfig_yaml = None
         # Kubernetes connector configuration setup
         self.k8s_connect = self.k8s_config
-        print("Kubernetes connector configuration:", self.k8s_connect)
+        print("K8sDriver - Kubernetes connector configuration:", self.k8s_connect)
 
     @property
     def k8s_config(self):
@@ -31,10 +30,10 @@ class K8sDriver(object):
                     Configuration.set_default(call_config)
                     return(SUCCESS)
                 except client.exceptions.ApiException as e:
-                    print("Failure to connect to the Kubernetes cluster: %s" % e)
+                    print("K8sDriver - failure to connect to the Kubernetes cluster: %s" % e)
                     return(FAILURE)
         except IOError as err:
-            print("IOError:", err)
+            print("K8sDriver - IOError:", err)
             return(FAILURE)
 
     def get_pods(self, namespace):
@@ -50,6 +49,6 @@ class K8sDriver(object):
         try:
             api_response = apps_v1.create_namespaced_deployment(body=dep_dict, namespace=namespace)
             #pprint(api_response)
-            print("Deployment created. status='%s'" % api_response.metadata.name)
+            print("K8sDriver - deployment created with status='%s'" % api_response.metadata.name)
         except client.exceptions.ApiException as e:
-            print("Deployment exception: %s" % e)
+            print("K8sDriver - deployment exception: %s" % e)

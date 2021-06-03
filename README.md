@@ -14,15 +14,13 @@ pip install -r requirements.txt
 
 2. Check that everything is up and running: ```docker-compose ps```
 
-3. Start the app (entrypoint project/__main__.py): ```/home/athina/python-virtual-environments/thesis/bin/python /home/athina/Desktop/thesis/code/ntua_diploma_thesis/src/__main__.py worker --loglevel=INFO```
+3. Start the faust app: ```/home/athina/python-virtual-environments/thesis/bin/python /home/athina/Desktop/thesis/code/ntua_diploma_thesis/src/__main__.py worker --loglevel=INFO```
+
+4. Start the flask app: ```flask-start.sh``` from project's root
 
 4. Deploy the nginx-deployment.yaml file: ```/home/athina/python-virtual-environments/thesis/bin/python /home/athina/Desktop/thesis/code/ntua_diploma_thesis/deploy.py```
 
-4. Write to the resource optimization toolkit topic: 
-* ```kafkacat -b localhost:9092 -t resource_optimization_toolkit -P``` 
-* and then type ```1```
-
-5. To check that everything that is written in the "orchestrator" topic is passed to the "kubernetes" topic, run each cmd on a terminal:
+5. To check that data is published to the topics:
 * ```kafkacat -b localhost:9092 -t dispatcher```
 * ```kafkacat -b localhost:9092 -t resource_optimization_toolkit```
 * ```kafkacat -b localhost:9092 -t orchestrator```
@@ -34,15 +32,16 @@ pip install -r requirements.txt
 | Folder/File                       | Description                                                       |
 | --------------------------------- | ----------------------------------------------------------------- |
 | flask-start.sh                    | script to run the flask app (mod +x)                              |
-| src/__main__.py                   | application entrypoint                                            |
+| src/main.py                       | faust application entrypoint                                      |
 | src/faust_app.py                  | creates an instance of the Faust for stream processing            |
 | src/flask_app.py                  | creates an instance of the Flask                                  |
 | src/models.py                     | faust models to describe the data in streams                      |
+| src/helpers.py                    | helping functions                                                 |
+| src/resource_optimization_toolkit | top level dir of the resource optimization toolkit service        |
+| src/orchestrator                  | top level dir of the central orchestrator service                 |
 | src/drivers                       | top level dir of the drivers services                             |
 | src/drivers/agents.py             | faust async stream processors of drivers' topics                  |
 | src/drivers/kubernetes.py         | K8sDriver class to connect and interact with a kubernetes cluster |
-| src/orchestrator                  | top level dir of the central orchestrator service                 |
-| src/resource_optimization_toolkit | top level dir of the resource optimization toolkit service        |
 
 ## Useful Commands
 
