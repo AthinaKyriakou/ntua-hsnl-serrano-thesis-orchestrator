@@ -6,9 +6,11 @@ from faust_app import faust_app
 sys.path.append('.')
 
 def main():    
-    print('\n__main__ - creating kafka topics')
+    print('__main__ - creating kafka topics')
     admin_client = AdminClient({'bootstrap.servers': 'localhost:9092'})
     topic_list = []
+    #TODO: change partitions
+    topic_list.append(NewTopic('dispatcher', 1, 1))
     topic_list.append(NewTopic('resource_optimization_toolkit', 1, 1))
     topic_list.append(NewTopic('orchestrator', 1, 1))
     topic_list.append(NewTopic('kubernetes', 1, 1))
