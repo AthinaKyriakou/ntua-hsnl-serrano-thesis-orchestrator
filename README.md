@@ -7,6 +7,32 @@
 ```bash
 pip install -r requirements.txt
 ``` 
+## Install MongoDB Kafka Connector
+
+### Install the MongoDB Sink Connector
+Detailed info [here](https://www.mongodb.com/blog/post/getting-started-with-the-mongodb-connector-for-apache-kafka-and-mongodb-atlas)
+1. Download the MongoDB Connector for Apache Kafka .zip file from the [Confluent Hub website](https://www.confluent.io/hub/mongodb/kafka-connect-mongodb).
+2. Extract the ZIP file contents and copy them to the desired location (i.e. /home/athina/Desktop/thesis/code/kafka/plugins).
+3. Add this location path to the plugin path in the Kafka Connect's worker configuration (docker-compose.yaml --> kafka-connect --> environmnent --> CONNECT_PLUGIN_PATH)
+4. Start the Connect workers with that configuration. Connect will discover all connectors defined within those plugins.
+5. Repeat these steps for each machine where Connect is running. Each connector must be available on each worker.
+
+### Establish the connection 
+In this example, the MongoDB is in MongoDB Atlas.
+```bash
+curl -X PUT http://localhost:8083/connectors/sink-mongodb-users/config -H "Content-Type: application/json" -d ' {
+      "connector.class":"com.mongodb.kafka.connect.MongoSinkConnector",
+      "tasks.max":"1",
+      "topics":"db_consumer",
+      "connection.uri":"mongodb://athina_kyriakou:123@ntua-thesis-cluster-shard-00-00.xcgej.mongodb.net:27017,ntua-thesis-cluster-shard-00-01.xcgej.mongodb.net:27017,ntua-thesis-cluster-shard-00-02.xcgej.mongodb.net:27017/myFirstDatabase?ssl=true&replicaSet=atlas-xirr44-shard-0&authSource=admin&retryWrites=true&w=majority",
+      "database":"thesisdb",
+      "collection":"db_consumer",
+      "key.converter":"org.apache.kafka.connect.json.JsonConverter",
+      "key.converter.schemas.enable":false,
+      "value.converter":"org.apache.kafka.connect.json.JsonConverter",
+      "value.converter.schemas.enable":false
+}'
+``` 
 
 ## Quickstart
 
@@ -86,6 +112,7 @@ kafkacat -b localhost:9092 -t orchestrator -P
 * [Kafka CheatSheet](https://docs.confluent.io/platform/current/quickstart/cos-docker-quickstart.html)
 * [Getting Started with Apache Kafka in Python](https://towardsdatascience.com/getting-started-with-apache-kafka-in-python-604b3250aa05)
 * [Basic stream processing using Kafka and Faust](https://abhishekbose550.medium.com/basic-stream-processing-using-kafka-and-faust-7de07ed0ea77)
+* [Kafka: Consumer API vs Streams API](https://stackoverflow.com/questions/44014975/kafka-consumer-api-vs-streams-api)
 
 ### Kubernetes
 * [Kubectl Cheat Sheet](https://kubernetes.io/docs/reference/kubectl/cheatsheet/)
@@ -108,3 +135,8 @@ tocheck:
 * [The App - Define your Faust project](https://faust.readthedocs.io/en/latest/userguide/application.html#medium-large-projects): Spot the suggested structure of medium/large projects [here](https://faust.readthedocs.io/en/latest/userguide/application.html#medium-large-projects)
 * [Example of medium project structure implementation](https://www.8mincode.com/posts/how-to-stream-data-with-kafka-and-faust-streaming-pipeline/)
 * [Models, Serialization, and Codecs](https://faust.readthedocs.io/en/latest/userguide/models.html)
+* [Stream processing with Python Faust: Part II – Streaming pipeline](https://www.8mincode.com/posts/how-to-stream-data-with-kafka-and-faust-streaming-pipeline/)
+
+### MongoDB
+* [MongoDB Kafka Connector](https://docs.mongodb.com/kafka-connector/current/)
+* Create a Database in MongoDB Using the CLI with MongoDB Atlas: [here](https://www.mongodb.com/basics/create-database) & [here](https://docs.atlas.mongodb.com/mongo-shell-connection/)
