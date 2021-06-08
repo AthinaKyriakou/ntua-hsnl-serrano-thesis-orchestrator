@@ -1,6 +1,5 @@
 from flask import Flask, request, abort
-from src.faust_app import faust_app
-from config import kafka_cfg
+from src.config import kafka_cfg
 import uuid
 import yaml
 from src.models import DeploymentPlan

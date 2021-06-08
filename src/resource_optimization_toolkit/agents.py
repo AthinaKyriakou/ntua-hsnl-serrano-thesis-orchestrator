@@ -1,6 +1,6 @@
 from faust_app import faust_app
 from src.models import DeploymentPlan
-from config import kafka_cfg
+from src.config import kafka_cfg
 
 # register the used topics in the faust app
 rto_topic = faust_app.topic(kafka_cfg['resource_optimization_toolkit'], value_type=DeploymentPlan)

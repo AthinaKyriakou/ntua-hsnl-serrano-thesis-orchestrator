@@ -1,5 +1,5 @@
 from faust_app import faust_app
-from config import kafka_cfg
+from src.config import kafka_cfg
 from src.models import DeploymentPlan
 
 # register the used topics in the faust app

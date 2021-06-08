@@ -1,6 +1,6 @@
 from faust_app import faust_app
 from src.models import DeploymentPlan
-from config import kafka_cfg
+from src.config import kafka_cfg
         
 # register the used topics in the faust app
 orchestrator_topic = faust_app.topic(kafka_cfg['orchestrator'], value_type=DeploymentPlan)

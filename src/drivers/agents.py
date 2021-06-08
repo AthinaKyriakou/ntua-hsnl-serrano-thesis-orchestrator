@@ -1,5 +1,5 @@
 from faust_app import faust_app
-from config import kafka_cfg
+from src.config import kafka_cfg
 from src.models import DeploymentPlan
 from src.drivers.kubernetes import K8sDriver
 
@@ -19,4 +19,4 @@ async def deploy_to_k8s(plans):
         print(f"Kubernetes Driver - data for appUUID: {p.appUUID} received")
         print(type(p.payload))
         #submit job to kubernetes
-        k8s_driver.deploy(dep_dict=p.payload, namespace=kafka_cfg['default'])
+        k8s_driver.deploy(dep_dict=p.payload, namespace='default')
