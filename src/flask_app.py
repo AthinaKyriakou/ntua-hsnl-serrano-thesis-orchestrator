@@ -1,5 +1,6 @@
 from flask import Flask, request, abort
 from src.faust_app import faust_app
+from config import kafka_cfg
 import uuid
 import yaml
 from src.models import DeploymentPlan
@@ -15,9 +16,9 @@ app = Flask(__name__)
 def instructions():
     return "<p>Possible actions: submit, inspect, terminate</p>"
 
+# get a yaml file for deployment
 @app.route("/deploy/<filename>", methods=["POST"])
 def submit_deployment(filename):
-    # get a yaml file for deployment
     try:
         payload_bytes = request.data
         # TODO: do some syntax checks in the deployment file
@@ -29,9 +30,8 @@ def submit_deployment(filename):
         dp_dict.pop('__evaluated_fields__', None)
         dp_str = json.dumps(dp_dict)
         
-        # TODO: read conf from file
-        p = Producer({'bootstrap.servers': "localhost:9092"})
-        p.produce(topic='dispatcher', value=dp_str)
+        p = Producer({'bootstrap.servers': kafka_cfg['bootstrap.servers']})
+        p.produce(topic=kafka_cfg['dispatcher'], value=dp_str)
         p.flush()
     except Exception as e:
         # return 400 BAD REQUEST

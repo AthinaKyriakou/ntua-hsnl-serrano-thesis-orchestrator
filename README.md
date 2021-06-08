@@ -9,15 +9,7 @@ pip install -r requirements.txt
 ``` 
 ## Install MongoDB Kafka Connector
 
-### Install the MongoDB Sink Connector
-Detailed info [here](https://www.mongodb.com/blog/post/getting-started-with-the-mongodb-connector-for-apache-kafka-and-mongodb-atlas)
-1. Download the MongoDB Connector for Apache Kafka .zip file from the [Confluent Hub website](https://www.confluent.io/hub/mongodb/kafka-connect-mongodb).
-2. Extract the ZIP file contents and copy them to the desired location (i.e. /home/athina/Desktop/thesis/code/kafka/plugins).
-3. Add this location path to the plugin path in the Kafka Connect's worker configuration (docker-compose.yaml --> kafka-connect --> environmnent --> CONNECT_PLUGIN_PATH)
-4. Start the Connect workers with that configuration. Connect will discover all connectors defined within those plugins.
-5. Repeat these steps for each machine where Connect is running. Each connector must be available on each worker.
-
-### Establish the connection 
+### Establish the  MongoDB Sink connection 
 In this example, the MongoDB is in MongoDB Atlas.
 ```bash
 curl -X PUT http://localhost:8083/connectors/sink-mongodb-users/config -H "Content-Type: application/json" -d ' {
@@ -33,6 +25,7 @@ curl -X PUT http://localhost:8083/connectors/sink-mongodb-users/config -H "Conte
       "value.converter.schemas.enable":false
 }'
 ``` 
+Detailed info [here](https://www.mongodb.com/blog/post/getting-started-with-the-mongodb-connector-for-apache-kafka-and-mongodb-atlas)
 
 ## Quickstart
 

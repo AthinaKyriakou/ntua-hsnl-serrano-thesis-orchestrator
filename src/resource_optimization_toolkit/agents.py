@@ -1,10 +1,10 @@
 from faust_app import faust_app
 from src.models import DeploymentPlan
+from config import kafka_cfg
 
-# TODO: read topic names from config file
 # register the used topics in the faust app
-rto_topic = faust_app.topic('resource_optimization_toolkit', value_type=DeploymentPlan)
-orchestrator_topic = faust_app.topic('orchestrator', value_type=DeploymentPlan)
+rto_topic = faust_app.topic(kafka_cfg['resource_optimization_toolkit'], value_type=DeploymentPlan)
+orchestrator_topic = faust_app.topic(kafka_cfg['orchestrator'], value_type=DeploymentPlan)
 
 # TODO: add RTO logic         
 @faust_app.agent(rto_topic)

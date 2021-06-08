@@ -1,10 +1,10 @@
 from faust_app import faust_app
+from config import kafka_cfg
 from src.models import DeploymentPlan
-        
-# TODO: read topic names from config file
+
 # register the used topics in the faust app
-dispatcher = faust_app.topic('dispatcher', value_type=DeploymentPlan)
-resource_optimization_toolkit = faust_app.topic('resource_optimization_toolkit', value_type=DeploymentPlan)
+dispatcher = faust_app.topic(kafka_cfg['dispatcher'], value_type=DeploymentPlan)
+resource_optimization_toolkit = faust_app.topic(kafka_cfg['resource_optimization_toolkit'], value_type=DeploymentPlan)
 
 # TODO: add dispatcher logic        
 @faust_app.agent(dispatcher)

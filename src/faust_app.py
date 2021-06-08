@@ -1,14 +1,9 @@
 import faust
-
-# import from file
-VERSION = 1
-PROJECT = 'ntua_diploma_thesis'
-ORIGIN = 'src'
-AUTODISCOVER = [f"{ORIGIN}.drivers",f"{ORIGIN}.orchestrator",]
-BROKER = 'kafka://localhost:9092'
+from config import kafka_cfg
 
 print('\nfaust_app - creating an instance of the faust library')
-faust_app = faust.App(PROJECT, version=VERSION, autodiscover=AUTODISCOVER, origin=ORIGIN, broker=BROKER)
+autodiscover = [kafka_cfg['origin'] + '.' + dir for dir in kafka_cfg['autodiscover']]
+faust_app = faust.App(kafka_cfg['project'], version=kafka_cfg['version'], autodiscover=autodiscover, origin=kafka_cfg['origin'], broker=kafka_cfg['broker'])
 
 def main() -> None:
     faust_app.main()
