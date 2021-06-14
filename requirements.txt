@@ -11,6 +11,7 @@ colorlog==5.0.1
 confluent-kafka==1.6.1
 croniter==1.0.13
 dnspython==1.16.0
+docker==5.0.0
 eventlet==0.31.0
 faust==1.10.4
 Flask==2.0.1

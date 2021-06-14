@@ -21,7 +21,6 @@ def submit_deployment(filename):
     try:
         payload_bytes = request.data
         # TODO: do some syntax checks in the deployment file
-        # TODO: check encoding logic from here
         payload_dict = yaml.safe_load(payload_bytes)
         app_UUID = uuid.uuid4().hex
         dp = DeploymentPlan(appUUID=app_UUID,action=DEPLOY_ACTION,payload=payload_dict)

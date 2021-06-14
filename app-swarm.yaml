@@ -1,0 +1,8 @@
+# need to specify build for custom images
+version: '3.7'
+
+services:
+  my_swarm_app:
+    image: nginx:1.16.1
+    ports:
+      - "8005:8080"

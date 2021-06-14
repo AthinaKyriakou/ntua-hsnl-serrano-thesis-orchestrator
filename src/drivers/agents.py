@@ -3,7 +3,7 @@ from src.config import kafka_cfg
 from src.models import DeploymentPlan
 from src.drivers.kubernetes import K8sDriver
 
-#TODO: read from config file, check that k8s driver class is singleton
+#TODO: check that k8s driver class is singleton
 kafka_conf = {
     'bootstrap.servers': kafka_cfg['bootstrap.servers'],
     'group.id': kafka_cfg['group.id'],
