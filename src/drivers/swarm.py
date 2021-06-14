@@ -2,8 +2,7 @@ import docker
 import yaml
 import os
 import subprocess
-
-SWARM_DEPL_DIR = os.path.join(os.path.abspath(os.getcwd()), 'swarm_deployments')
+from src.config import SWARM_DEPL_DIR
 
 class SwarmDriver(object):
     

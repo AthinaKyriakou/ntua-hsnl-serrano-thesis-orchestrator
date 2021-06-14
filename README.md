@@ -37,12 +37,13 @@ Detailed info [here](https://www.mongodb.com/blog/post/getting-started-with-the-
 
 4. Start the flask app: ```flask-start.sh``` from project's root
 
-4. Deploy the nginx-deployment.yaml file: ```/home/athina/python-virtual-environments/thesis/bin/python /home/athina/Desktop/thesis/code/ntua_diploma_thesis/deploy.py```
+4. To deploy by a yaml file, specify the yaml file in ```/home/athina/python-virtual-environments/thesis/bin/python /home/athina/Desktop/thesis/code/ntua_diploma_thesis/deploy.py```
 
 5. To check that data is published to the topics:
 * ```kafkacat -b localhost:9092 -t dispatcher```
 * ```kafkacat -b localhost:9092 -t resource_optimization_toolkit```
 * ```kafkacat -b localhost:9092 -t orchestrator```
+* ```kafkacat -b localhost:9092 -t swarm```
 * ```kafkacat -b localhost:9092 -t kubernetes```
 
 6. Check deployments in Kubernetes: ```kubectl get deployments```
@@ -97,6 +98,20 @@ Write to a topic
 ```bash
 kafkacat -b localhost:9092 -t orchestrator -P
 {"appUUID": "tmp", "serviceUUID": "hello1"}
+```
+
+### Docker
+
+CLI [Documentation](https://docs.docker.com/engine/reference/commandline/docker/)
+
+Get deployed services
+```bash
+docker service ls
+```
+
+Delete a service
+```bash
+docker service rm <service_name>
 ```
 
 ## Useful Resources

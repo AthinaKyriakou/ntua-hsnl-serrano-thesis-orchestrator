@@ -16,6 +16,7 @@ def main():
     topic_list.append(NewTopic(kafka_cfg['resource_optimization_toolkit'], 1, 1))
     topic_list.append(NewTopic(kafka_cfg['orchestrator'], 1, 1))
     topic_list.append(NewTopic(kafka_cfg['kubernetes'], 1, 1))
+    topic_list.append(NewTopic(kafka_cfg['swarm'], 1, 1))
     topic_list.append(NewTopic(kafka_cfg['db_consumer'], 1, 1))
     admin_client.create_topics(topic_list)
 

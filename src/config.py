@@ -1,4 +1,14 @@
 #!/usr/bin/env python
+import os
+
+DEPLOY_ACTION = 'deploy'
+TERMINATE_ACTION = 'terminate'
+INSPECT_ACTION = 'inspect'
+
+SWARM = 'swarm'
+SWARM_DEPL_DIR = os.path.join(os.path.abspath(os.getcwd()), 'swarm_deployments')
+
+K8s = 'k8s'
 
 kafka_cfg = {
     # kafka producer, k8s driver
@@ -20,5 +30,6 @@ kafka_cfg = {
     'resource_optimization_toolkit': 'resource_optimization_toolkit',
     'orchestrator': 'orchestrator',
     'kubernetes': 'kubernetes',
+    'swarm': 'swarm',
     'db_consumer': 'db_consumer',
 }

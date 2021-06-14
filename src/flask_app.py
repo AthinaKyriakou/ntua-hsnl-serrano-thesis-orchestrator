@@ -1,12 +1,10 @@
 from flask import Flask, request, abort
-from src.config import kafka_cfg
+from src.config import kafka_cfg, DEPLOY_ACTION, TERMINATE_ACTION
 import uuid
 import yaml
 from src.models import DeploymentPlan
 from confluent_kafka import Producer
 import json
-
-DEPLOY_ACTION = 'deploy'
 
 print('flask_app - creating an instance of the flask library')
 app = Flask(__name__)
@@ -27,7 +25,6 @@ def submit_deployment(filename):
         dp_dict = vars(dp)
         dp_dict.pop('__evaluated_fields__', None)
         dp_str = json.dumps(dp_dict)
-        
         p = Producer({'bootstrap.servers': kafka_cfg['bootstrap.servers']})
         p.produce(topic=kafka_cfg['dispatcher'], value=dp_str)
         p.flush()
@@ -36,3 +33,5 @@ def submit_deployment(filename):
         abort(400,e)
     # return 201 CREATED
     return "", 201
+
+# terminate based on deployment (k8s) or stack (swarm) name
