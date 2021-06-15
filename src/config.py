@@ -1,9 +1,13 @@
 #!/usr/bin/env python
 import os
 
+# supported user actions
 DEPLOY_ACTION = 'deploy'
 TERMINATE_ACTION = 'terminate'
 INSPECT_ACTION = 'inspect'
+
+# states of requests
+NEW_STATE = 'new'
 
 SWARM = 'swarm'
 SWARM_DEPL_DIR = os.path.join(os.path.abspath(os.getcwd()), 'swarm_deployments')
@@ -17,6 +21,10 @@ kafka_cfg = {
     'group.id': 'ntua_diploma_thesis',
     'auto.offset.reset': 'smallest',
     'namespace': ['default'],
+
+    # schema registry
+    'schema.registry.url': 'localhost:8081',
+    'schema_file_path': '/home/athina/Desktop/thesis/code/ntua_diploma_thesis/src/avro/Deployment.avsc',
 
     # faust config
     'broker': 'kafka://localhost:9092',

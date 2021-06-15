@@ -35,7 +35,7 @@ Detailed info [here](https://www.mongodb.com/blog/post/getting-started-with-the-
 
 3. Start the faust app: ```/home/athina/python-virtual-environments/thesis/bin/python /home/athina/Desktop/thesis/code/ntua_diploma_thesis/src/__main__.py worker --loglevel=INFO```
 
-4. Start the flask app: ```flask-start.sh``` from project's root
+4. Start the flask app: ```./flask-start.sh``` from project's root
 
 4. To deploy by a yaml file, specify the yaml file in ```/home/athina/python-virtual-environments/thesis/bin/python /home/athina/Desktop/thesis/code/ntua_diploma_thesis/deploy.py```
 

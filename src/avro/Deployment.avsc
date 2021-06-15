@@ -1,0 +1,13 @@
+{
+ "namespace": "ntua_diploma_thesis.src.avroschemas",
+ "type": "record",
+ "name": "Deployment",
+ "fields": [
+     {"name": "requestUUID", "type": "string"},
+     {"name": "state", "type": "string"},
+     {"name": "resource", "type": "string"},
+     {"name": "appID", "type": "string"},
+     {"name": "appName", "type": "string"},
+     {"name": "yamlSpec", "type": "string"},
+ ]
+}
