@@ -9,7 +9,7 @@ pip install -r requirements.txt
 ``` 
 ## Install MongoDB Kafka Connector
 
-### Establish the  MongoDB Sink connection 
+### Establish the MongoDB Sink connection (for upsert)
 In this example, the MongoDB is in MongoDB Atlas.
 ```bash
 curl -X PUT http://localhost:8083/connectors/sink-mongodb-users/config -H "Content-Type: application/json" -d ' {
@@ -22,7 +22,11 @@ curl -X PUT http://localhost:8083/connectors/sink-mongodb-users/config -H "Conte
       "key.converter":"org.apache.kafka.connect.json.JsonConverter",
       "key.converter.schemas.enable":false,
       "value.converter":"org.apache.kafka.connect.json.JsonConverter",
-      "value.converter.schemas.enable":false
+      "value.converter.schemas.enable":false,
+      "document.id.strategy":"com.mongodb.kafka.connect.sink.processor.id.strategy.PartialValueStrategy",
+      "document.id.strategy.partial.value.projection.list":"requestUUID",
+      "document.id.strategy.partial.value.projection.type":"AllowList",
+      "writemodel.strategy":"com.mongodb.kafka.connect.sink.writemodel.strategy.ReplaceOneBusinessKeyStrategy"
 }'
 ``` 
 Detailed info [here](https://www.mongodb.com/blog/post/getting-started-with-the-mongodb-connector-for-apache-kafka-and-mongodb-atlas)
@@ -145,6 +149,17 @@ tocheck:
 * [Models, Serialization, and Codecs](https://faust.readthedocs.io/en/latest/userguide/models.html)
 * [Stream processing with Python Faust: Part II – Streaming pipeline](https://www.8mincode.com/posts/how-to-stream-data-with-kafka-and-faust-streaming-pipeline/)
 
-### MongoDB
+### Kafka Source - MongoDB Sink 
 * [MongoDB Kafka Connector](https://docs.mongodb.com/kafka-connector/current/)
 * Create a Database in MongoDB Using the CLI with MongoDB Atlas: [here](https://www.mongodb.com/basics/create-database) & [here](https://docs.atlas.mongodb.com/mongo-shell-connection/)
+* [MongoDB Write Model Strategies](https://docs.mongodb.com/kafka-connector/current/kafka-sink-postprocessors/#custom-write-model-strategy)
+* Kafka Connector used strategy for upsert: [ReplaceOneBusinessKeyStrategy](https://docs.mongodb.com/kafka-connector/current/kafka-sink-postprocessors/#std-label-replaceonebusinesskey-example)
+* [DeleteOne write model strategy](https://www.mongodb.com/blog/post/mongodb-connector-apache-kafka-available-now)
+
+### Avro
+* [Introduction to Schemas in Apache Kafka with the Confluent Schema Registry](https://medium.com/@stephane.maarek/introduction-to-schemas-in-apache-kafka-with-the-confluent-schema-registry-3bf55e401321)
+* [Create Avro Producers With Python and the Confluent Kafka Library](https://betterprogramming.pub/avro-producer-with-python-and-confluent-kafka-library-4a1a2ed91a24)
+* [Consume Messages From Kafka Topics Using Python and Avro Consumer](https://betterprogramming.pub/consume-messages-from-kafka-topic-using-python-and-avro-consumer-eda5aad64230)
+* [How to deserialize AVRO messages in Python Faust?](https://medium.com/swlh/how-to-deserialize-avro-messages-in-python-faust-400118843447)
+
+
