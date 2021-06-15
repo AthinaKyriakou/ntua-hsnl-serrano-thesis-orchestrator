@@ -1,8 +1,10 @@
 from faust_app import faust_app
-from src.config import kafka_cfg
-from src.models import DeploymentPlan
+from confluent_kafka import Producer
+from src.config import kafka_cfg, DEPLOYED_STATE, FAILED_STATE
+from src.models import DeploymentPlan, DatabaseRecord
 from src.drivers.kubernetes import K8sDriver
 from src.drivers.swarm import SwarmDriver
+from src.utils.faust_helpers import record_to_string
 
 #TODO: check that driver classes are singletons
 kafka_conf = {
@@ -20,17 +22,34 @@ swarm_topic = faust_app.topic(kafka_cfg['swarm'], value_type=DeploymentPlan)
 #TODO: implement k8s driver logic
 @faust_app.agent(k8s_topic)
 async def deploy_to_k8s(plans):
-    async for p in plans:
-        print(f"Kubernetes Driver - data for requestUUID: {p.requestUUID} received")
-        print(type(p.payload))
-        #submit job to kubernetes
-        k8s_driver.deploy(dep_dict=p.payload, namespace='default')
+    p = Producer({'bootstrap.servers': kafka_cfg['bootstrap.servers']})
+    async for plan in plans:
+        print(f"Kubernetes Driver - data for requestUUID: {plan.requestUUID} received")
+        # submit job to kubernetes
+        ret = k8s_driver.deploy(dep_dict=plan.yamlSpec, namespace='default')
+        # write to db_consumer topic - TODO: add and remove later a deployment/stack name label, add success code to config file
+        print(type(ret))
+        if(ret==201):
+            db_rec = DatabaseRecord(requestUUID=plan.requestUUID, state=DEPLOYED_STATE, resource=None, yamlSpec=plan.yamlSpec, appID=None, appName=None)
+        else:
+            db_rec = DatabaseRecord(requestUUID=plan.requestUUID, state=FAILED_STATE, resource=None, yamlSpec=plan.yamlSpec, appID=None, appName=None)
+        db_rec_str = record_to_string(db_rec)
+        p.produce(topic=kafka_cfg['db_consumer'], value=db_rec_str)
+        p.flush()
 
 #TODO: implement swarm driver logic
 @faust_app.agent(swarm_topic)
 async def deploy_to_swarm(plans):
-    async for p in plans:
-        print(f"Swarm Driver - data for requestUUID: {p.requestUUID} received")
-        print(type(p.payload))
+    p = Producer({'bootstrap.servers': kafka_cfg['bootstrap.servers']})
+    async for plan in plans:
+        print(f"Swarm Driver - data for requestUUID: {plan.requestUUID} received")
         #submit job to swarm
-        swarm_driver.deploy(dep_dict=p.payload)
+        ret = swarm_driver.deploy(dep_dict=plan.yamlSpec)
+        # write to db_consumer topic - TODO: add and remove later a deployment/stack name label, add success code to config file
+        if(ret==201):
+            db_rec = DatabaseRecord(requestUUID=plan.requestUUID, state=DEPLOYED_STATE, resource=None, yamlSpec=plan.yamlSpec, appID=None, appName=None)
+        else:
+            db_rec = DatabaseRecord(requestUUID=plan.requestUUID, state=FAILED_STATE, resource=None, yamlSpec=plan.yamlSpec, appID=None, appName=None)
+        db_rec_str = record_to_string(db_rec)
+        p.produce(topic=kafka_cfg['db_consumer'], value=db_rec_str)
+        p.flush()

@@ -42,5 +42,7 @@ class SwarmDriver(object):
             stack_name = 'stack_name'
             subprocess.run('docker stack deploy --compose-file %s --orchestrator swarm %s' %(compose_file_path, stack_name), check=True, shell=True)
             print('SwarmDriver - stack %s created' %(stack_name))
+            return 201
         except subprocess.CalledProcessError as e:
             print('SwarmDriver - deployment exception: %s' % e)
+            return 400

@@ -27,7 +27,7 @@ def submit_deployment(filename):
         p = Producer({'bootstrap.servers': kafka_cfg['bootstrap.servers']})
 
         # write to dispatcher topic
-        dp = DeploymentPlan(requestUUID=requestUUID, action=DEPLOY_ACTION, payload=payload_dict)
+        dp = DeploymentPlan(requestUUID=requestUUID, action=DEPLOY_ACTION, yamlSpec=payload_dict)
         dp_str = record_to_string(dp)
         p.produce(topic=kafka_cfg['dispatcher'], value=dp_str)
         p.flush()

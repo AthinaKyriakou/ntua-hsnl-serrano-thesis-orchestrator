@@ -9,6 +9,9 @@ INSPECT_ACTION = 'inspect'
 # states of requests
 NEW_STATE = 'new'
 DISPATCHED_STATE = 'dispatched'
+PENDING_STATE = 'pending'
+DEPLOYED_STATE = 'deployed'
+FAILED_STATE = 'failed'
 
 SWARM = 'swarm'
 SWARM_DEPL_DIR = os.path.join(os.path.abspath(os.getcwd()), 'swarm_deployments')

@@ -51,5 +51,7 @@ class K8sDriver(object):
             api_response = apps_v1.create_namespaced_deployment(body=dep_dict, namespace=namespace)
             #pprint(api_response)
             print("K8sDriver - deployment created with status='%s'" % api_response.metadata.name)
+            return 201
         except client.exceptions.ApiException as e:
             print("K8sDriver - deployment exception: %s" % e)
+            return 400
