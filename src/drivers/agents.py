@@ -21,7 +21,7 @@ swarm_topic = faust_app.topic(kafka_cfg['swarm'], value_type=DeploymentPlan)
 @faust_app.agent(k8s_topic)
 async def deploy_to_k8s(plans):
     async for p in plans:
-        print(f"Kubernetes Driver - data for appUUID: {p.appUUID} received")
+        print(f"Kubernetes Driver - data for requestUUID: {p.requestUUID} received")
         print(type(p.payload))
         #submit job to kubernetes
         k8s_driver.deploy(dep_dict=p.payload, namespace='default')
@@ -30,7 +30,7 @@ async def deploy_to_k8s(plans):
 @faust_app.agent(swarm_topic)
 async def deploy_to_swarm(plans):
     async for p in plans:
-        print(f"Swarm Driver - data for appUUID: {p.appUUID} received")
+        print(f"Swarm Driver - data for requestUUID: {p.requestUUID} received")
         print(type(p.payload))
         #submit job to swarm
         swarm_driver.deploy(dep_dict=p.payload)

@@ -2,7 +2,7 @@ from typing import Dict
 import faust
 
 class DeploymentPlan(faust.Record):
-    appUUID: str #TODO: check if I should change the name field
+    requestUUID: str #TODO: check if I should change the name field
     action: str
     payload: Dict[object, object] # yaml deployment plan loaded as python dict
 
