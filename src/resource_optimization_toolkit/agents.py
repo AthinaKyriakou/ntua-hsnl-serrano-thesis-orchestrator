@@ -3,6 +3,7 @@ from src.models import DeploymentPlan
 from src.config import kafka_cfg, DEPLOY_ACTION
 
 # register the used topics in the faust app
+print('ROT - global checks')
 rto_topic = faust_app.topic(kafka_cfg['resource_optimization_toolkit'], value_type=DeploymentPlan)
 orchestrator_topic = faust_app.topic(kafka_cfg['orchestrator'], value_type=DeploymentPlan)
 

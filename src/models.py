@@ -13,3 +13,4 @@ class DatabaseRecord(faust.Record):
     yamlSpec: Dict[object, object] # yaml deployment plan loaded as python dict
     appID: str
     appName: str
+    timestamp: str

@@ -15,13 +15,18 @@ FAILED_STATE = 'failed'
 
 SWARM = 'swarm'
 SWARM_DEPL_DIR = os.path.join(os.path.abspath(os.getcwd()), 'swarm_deployments')
-
 K8s = 'k8s'
+
+flask_cfg = {
+    'endpoint_local': 'http://127.0.0.1:5000',
+    'endpoint_prod': 'http://147.102.16.113:5000',
+}
 
 kafka_cfg = {
     # kafka producer, k8s driver
     'bootstrap.servers': 'localhost:9092',
-    'kubeconfig_yaml': '/home/athina/.kube/config',
+    # for local: 'kubeconfig_yaml': '/home/athina/.kube/config'
+    'kubeconfig_yaml': '/home/serrano/.kube/config',
     'group.id': 'ntua_diploma_thesis',
     'auto.offset.reset': 'smallest',
     'namespace': ['default'],

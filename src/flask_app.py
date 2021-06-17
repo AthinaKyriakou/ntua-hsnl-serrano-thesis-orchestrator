@@ -6,6 +6,8 @@ from src.models import DeploymentPlan, DatabaseRecord
 from src.utils.faust_helpers import record_to_string
 from src.utils.avro_schema import send_avro_record
 from confluent_kafka import Producer
+import datetime
+import json
 
 print('flask_app - creating an instance of the flask library')
 app = Flask(__name__)
@@ -33,7 +35,8 @@ def submit_deployment(filename):
         p.flush()
 
         # write to db_consumer topic - TODO: add and remove later a deployment/stack name label
-        db_rec = DatabaseRecord(requestUUID=requestUUID, state=NEW_STATE, resource=None, yamlSpec=payload_dict, appID=None, appName=None)
+        timestamp = json.dumps(datetime.datetime.now(), indent=4, sort_keys=True, default=str)
+        db_rec = DatabaseRecord(requestUUID=requestUUID, state=NEW_STATE, resource=None, yamlSpec=payload_dict, appID=None, appName=None, timestamp=timestamp)
         db_rec_str = record_to_string(db_rec)
         p.produce(topic=kafka_cfg['db_consumer'], value=db_rec_str)
         p.flush()

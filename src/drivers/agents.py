@@ -5,8 +5,11 @@ from src.models import DeploymentPlan, DatabaseRecord
 from src.drivers.kubernetes import K8sDriver
 from src.drivers.swarm import SwarmDriver
 from src.utils.faust_helpers import record_to_string
+import datetime
+import json
 
 #TODO: check that driver classes are singletons
+print('Drivers - global checks')
 kafka_conf = {
     'bootstrap.servers': kafka_cfg['bootstrap.servers'],
     'group.id': kafka_cfg['group.id'],
@@ -28,11 +31,11 @@ async def deploy_to_k8s(plans):
         # submit job to kubernetes
         ret = k8s_driver.deploy(dep_dict=plan.yamlSpec, namespace='default')
         # write to db_consumer topic - TODO: add and remove later a deployment/stack name label, add success code to config file
-        print(type(ret))
+        timestamp = json.dumps(datetime.datetime.now(), indent=4, sort_keys=True, default=str)
         if(ret==201):
-            db_rec = DatabaseRecord(requestUUID=plan.requestUUID, state=DEPLOYED_STATE, resource=None, yamlSpec=plan.yamlSpec, appID=None, appName=None)
+            db_rec = DatabaseRecord(requestUUID=plan.requestUUID, state=DEPLOYED_STATE, resource=None, yamlSpec=plan.yamlSpec, appID=None, appName=None, timestamp=timestamp)
         else:
-            db_rec = DatabaseRecord(requestUUID=plan.requestUUID, state=FAILED_STATE, resource=None, yamlSpec=plan.yamlSpec, appID=None, appName=None)
+            db_rec = DatabaseRecord(requestUUID=plan.requestUUID, state=FAILED_STATE, resource=None, yamlSpec=plan.yamlSpec, appID=None, appName=None, timestamp=timestamp)
         db_rec_str = record_to_string(db_rec)
         p.produce(topic=kafka_cfg['db_consumer'], value=db_rec_str)
         p.flush()
@@ -46,10 +49,11 @@ async def deploy_to_swarm(plans):
         #submit job to swarm
         ret = swarm_driver.deploy(dep_dict=plan.yamlSpec)
         # write to db_consumer topic - TODO: add and remove later a deployment/stack name label, add success code to config file
+        timestamp = json.dumps(datetime.datetime.now(), indent=4, sort_keys=True, default=str)
         if(ret==201):
-            db_rec = DatabaseRecord(requestUUID=plan.requestUUID, state=DEPLOYED_STATE, resource=None, yamlSpec=plan.yamlSpec, appID=None, appName=None)
+            db_rec = DatabaseRecord(requestUUID=plan.requestUUID, state=DEPLOYED_STATE, resource=None, yamlSpec=plan.yamlSpec, appID=None, appName=None, timestamp=timestamp)
         else:
-            db_rec = DatabaseRecord(requestUUID=plan.requestUUID, state=FAILED_STATE, resource=None, yamlSpec=plan.yamlSpec, appID=None, appName=None)
+            db_rec = DatabaseRecord(requestUUID=plan.requestUUID, state=FAILED_STATE, resource=None, yamlSpec=plan.yamlSpec, appID=None, appName=None, timestamp=timestamp)
         db_rec_str = record_to_string(db_rec)
         p.produce(topic=kafka_cfg['db_consumer'], value=db_rec_str)
         p.flush()
