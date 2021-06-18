@@ -23,7 +23,7 @@ swarm_driver = SwarmDriver()
 swarm_topic = faust_app.topic(kafka_cfg['swarm'], value_type=DeploymentPlan)
 
 #TODO: implement k8s driver logic
-@faust_app.agent(k8s_topic)
+'''@faust_app.agent(k8s_topic)
 async def deploy_to_k8s(plans):
     p = Producer({'bootstrap.servers': kafka_cfg['bootstrap.servers']})
     async for plan in plans:
@@ -39,6 +39,7 @@ async def deploy_to_k8s(plans):
         db_rec_str = record_to_string(db_rec)
         p.produce(topic=kafka_cfg['db_consumer'], value=db_rec_str)
         p.flush()
+'''
 
 #TODO: implement swarm driver logic
 @faust_app.agent(swarm_topic)

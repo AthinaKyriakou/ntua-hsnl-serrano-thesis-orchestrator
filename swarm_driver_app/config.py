@@ -40,7 +40,7 @@ kafka_cfg = {
     'version': 1,
     'project': 'ntua_diploma_thesis',
     'origin': 'src',
-    'autodiscover': ['drivers', 'orchestrator',],
+    'autodiscover': ['dispatcher', 'resource_optimization_toolkit', 'orchestrator',],
 
     # topic names
     'dispatcher': 'dispatcher',

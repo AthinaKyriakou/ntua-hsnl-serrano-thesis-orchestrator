@@ -163,3 +163,19 @@ tocheck:
 * [How to deserialize AVRO messages in Python Faust?](https://medium.com/swlh/how-to-deserialize-avro-messages-in-python-faust-400118843447)
 
 
+
+
+//tmp for prod
+1. run the faust app in kafka machine: 
+cd serrano_app
+python3 ./src/__main__.py worker --loglevel=INFO
+(can use python of your venv)
+
+2. run the flask app
+cd serrano_app
+./flask-start.sh
+
+3. deploy
+python3 ./deploy.py -yamlSpec /home/serrano/athina-thesis/ntua-thesis-orchestrator/serrano_app/app-k8s.yaml -env prod
+
+--> add configs notes

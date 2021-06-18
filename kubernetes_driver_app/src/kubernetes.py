@@ -10,8 +10,7 @@ FAILURE = 'FAILURE'
 
 class K8sDriver(object):
     
-    #TODO: check if I need the kafka_conf
-    def __init__(self, kubeconfig_yaml, kafka_conf):
+    def __init__(self, kubeconfig_yaml):
         self.kubeconfig_yaml = kubeconfig_yaml
         self._kubeconfig_yaml = None
         # Kubernetes connector configuration setup
