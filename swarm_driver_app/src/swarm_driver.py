@@ -2,7 +2,7 @@ import docker
 import yaml
 import os
 import subprocess
-from src.config import SWARM_DEPL_DIR
+from config import SWARM_DEPL_DIR
 
 class SwarmDriver(object):
     
