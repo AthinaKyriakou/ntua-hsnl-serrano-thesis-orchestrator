@@ -25,7 +25,7 @@ kafka_cfg = {
     # local: 
     # 'kubeconfig_yaml': '/home/athina/.kube/config',
     # prod:
-    'kubeconfig_yaml': '/home/serrano/.kube/config',
+    'kubeconfig_yaml': '/home/telis/.kube/config',
 
     # faust config
     # local: 
