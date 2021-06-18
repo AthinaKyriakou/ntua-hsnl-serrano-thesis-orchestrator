@@ -32,7 +32,9 @@ kafka_cfg = {
     # 'broker': 'kafka://localhost:9092',
     # prod:
     'broker': 'kafka://147.102.16.113:9092',
+    'version': 1,
     'project': 'ntua_diploma_thesis',
+    'origin': 'src',
 
     # topic names
     'dispatcher': 'dispatcher',

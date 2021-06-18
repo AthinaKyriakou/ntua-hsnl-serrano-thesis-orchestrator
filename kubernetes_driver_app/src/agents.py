@@ -3,7 +3,7 @@ from faust_app import faust_app
 from confluent_kafka import Producer
 from config import kafka_cfg, DEPLOYED_STATE, FAILED_STATE
 from models import DeploymentPlan, DatabaseRecord
-from kubernetes import K8sDriver
+from kubernetes_driver import K8sDriver
 from helpers import record_to_string
 import datetime
 import json
@@ -16,7 +16,6 @@ k8s_driver = K8sDriver(kubeconfig_yaml=kafka_cfg['kubeconfig_yaml'])
 async def deploy_to_k8s(plans):
     p = Producer({'bootstrap.servers': kafka_cfg['bootstrap.servers']})
     async for plan in plans:
-        
         print('kubernetes_driver_app - agents - data for requestUUID: %s received' % (plan.requestUUID))
         ret = k8s_driver.deploy(dep_dict=plan.yamlSpec, namespace='default')
         
