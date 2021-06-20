@@ -13,7 +13,7 @@ class DatabaseRecord(faust.Record):
 
 class KubernetesRecord(faust.Record):
     requestUUID: str
-    clusterInfo: str = None
+    #clusterInfo: str = None
     namespace: str
     name: str
     yamlSpec: Dict[object, object]
