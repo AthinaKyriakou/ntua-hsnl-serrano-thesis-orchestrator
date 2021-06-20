@@ -14,7 +14,6 @@ orchestrator_topic = faust_app.topic(kafka_cfg['orchestrator'], value_type=Compo
 swarm_topic = faust_app.topic(kafka_cfg['swarm'], value_type=SwarmRecord)
 k8s_topic = faust_app.topic(kafka_cfg['kubernetes'], value_type=KubernetesRecord)
 
-
 @faust_app.agent(orchestrator_topic)
 async def process_requests(requests):
     p = Producer({'bootstrap.servers': kafka_cfg['bootstrap.servers']})
@@ -29,9 +28,8 @@ async def process_requests(requests):
             if(selected_orchestrator == SWARM):
                 record = SwarmRecord(requestUUID=req.requestUUID, name=name, yamlSpec=req.yamlSpec)
                 await swarm_topic.send(value=record)
-            
             elif(selected_orchestrator == K8s):
-                record = KubernetesRecord(requestUUID=req.requestUUID, namespace=namespace, name=name, yamlSpec=req.yamlSpec))
+                record = KubernetesRecord(requestUUID=req.requestUUID, namespace=namespace, name=name, yamlSpec=req.yamlSpec)
                 await k8s_topic.send(value=record)
             else:
                 print('Orchestrator - no driver for %s found' %(selected_orchestrator))
@@ -52,4 +50,4 @@ async def process_requests(requests):
                 await swarm_topic.send(value=record)
             elif(info_dict['resource']  == K8s):
                 record = KubernetesRecord(requestUUID=req.requestUUID, namespace=info_dict['namespace'], name=info_dict['name'], yamlSpec=info_dict['yamlSpec'])
-                await k8s_topic.send(value=record)         
+                await k8s_topic.send(value=record)
