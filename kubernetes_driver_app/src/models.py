@@ -1,5 +1,4 @@
 from typing import Dict
-from typing_extensions import Required
 import faust
 
 class DatabaseRecord(faust.Record):

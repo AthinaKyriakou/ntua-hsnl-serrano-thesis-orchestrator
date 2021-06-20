@@ -13,7 +13,6 @@ def main():
     topic_list.append(NewTopic(kafka_cfg['kubernetes'], 1, 1))
     admin_client.create_topics(topic_list)
 
-
 if __name__ == '__main__':
     main()
     faust_app.main()
