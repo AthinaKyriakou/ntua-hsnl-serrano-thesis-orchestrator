@@ -22,3 +22,5 @@ spec:
 
 # custom added label, should be removed before deployment
 orchestrator: k8s
+name: nginx-deployment
+namespace: 'default'

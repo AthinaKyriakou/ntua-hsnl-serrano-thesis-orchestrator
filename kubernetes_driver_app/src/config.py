@@ -2,7 +2,7 @@
 
 # supported user actions
 DEPLOY_ACTION = 'deploy'
-TERMINATE_ACTION = 'terminate'
+REMOVE_ACTION = 'remove'
 INSPECT_ACTION = 'inspect'
 
 # states of requests
@@ -11,6 +11,7 @@ DISPATCHED_STATE = 'dispatched'
 PENDING_STATE = 'pending'
 DEPLOYED_STATE = 'deployed'
 FAILED_STATE = 'failed'
+REMOVED_STATE = 'removed'
 
 K8s = 'k8s'
 

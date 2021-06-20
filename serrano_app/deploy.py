@@ -12,15 +12,13 @@ def main():
         env = args[3]
         with open(yamlSpec) as fp:
             content = fp.read()
-            fileName = os.path.basename(os.path.normpath(yamlSpec))
-            deployPath = os.path.join(DEPLOY_ACTION, fileName)
             postPath = None
             if(env == 'local'):
                 # for local dev
-                postPath = os.path.join(flask_cfg['endpoint_local'], deployPath)
+                postPath = os.path.join(flask_cfg['endpoint_local'], DEPLOY_ACTION)
             elif(env == 'prod'):
                 # for prod
-                postPath = os.path.join(flask_cfg['endpoint_prod'], deployPath)
+                postPath = os.path.join(flask_cfg['endpoint_prod'], DEPLOY_ACTION)
             print('deploy to postPath: ', postPath)
             response = requests.post(postPath, data=content)
             print('deploy -', response)

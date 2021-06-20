@@ -8,3 +8,5 @@ services:
 
 # custom added label, should be removed before deployment
 orchestrator: swarm
+name: my_swarm_app
+namespace: 'default'

@@ -6,22 +6,22 @@ import yaml
 import datetime
 import json
 import sys
-from src.config import kafka_cfg, mongodb_cfg, DEPLOY_ACTION, TERMINATE_ACTION, NEW_STATE, DEPLOYED_STATE, FAILED_STATE
-from src.models import DeploymentPlan, DatabaseRecord, TerminationRequest
+from src.config import kafka_cfg, mongodb_cfg, DEPLOY_ACTION, REMOVE_ACTION, NEW_STATE, DEPLOYED_STATE, FAILED_STATE
+from src.models import ComponentsRecord, DatabaseRecord
 from src.utils.faust_helpers import record_to_string
 from src.utils.avro_schema import send_avro_record
-from src.utils.mongodb_helpers import get_db_client
+from src.utils.mongodb_helpers import query_by_requestUUID
 
 print('flask_app - creating an instance of the flask library')
 app = Flask(__name__)
 
 @app.route("/")
 def instructions():
-    return "<p>Possible actions: submit, inspect, terminate</p>"
+    return "<p>Possible actions: deploy, inspect, remove</p>"
 
 # get a yaml file for deployment
-@app.route("/deploy/<filename>", methods=["POST"])
-def submit_deployment(filename):
+@app.route("/deploy", methods=["POST"])
+def submit_deployment():
     try:
         payload_bytes = request.data
         # TODO: do some syntax checks in the deployment file
@@ -34,14 +34,17 @@ def submit_deployment(filename):
         p = Producer({'bootstrap.servers': kafka_cfg['bootstrap.servers']})
 
         # write to dispatcher topic
-        dp = DeploymentPlan(requestUUID=requestUUID, action=DEPLOY_ACTION, yamlSpec=payload_dict)
+        dp = ComponentsRecord(requestUUID=requestUUID, action=DEPLOY_ACTION, yamlSpec=payload_dict)
         dp_str = record_to_string(dp)
         p.produce(topic=kafka_cfg['dispatcher'], value=dp_str)
         p.flush()
 
-        # write to db_consumer topic - TODO: add and remove later a deployment/stack name label
+        # write to db_consumer topic
+        namespace = payload_dict.get('namespace')
+        name = payload_dict.get('name')
         timestamp = json.dumps(datetime.datetime.now(), indent=4, sort_keys=True, default=str)
-        db_rec = DatabaseRecord(requestUUID=requestUUID, state=NEW_STATE, resource=None, yamlSpec=payload_dict, appID=None, appName=None, timestamp=timestamp)
+        
+        db_rec = DatabaseRecord(requestUUID=requestUUID, namespace=namespace, name=name, state=NEW_STATE, resource=None, yamlSpec=payload_dict, timestamp=timestamp)
         db_rec_str = record_to_string(db_rec)
         p.produce(topic=kafka_cfg['db_consumer'], value=db_rec_str)
         p.flush()
@@ -56,17 +59,15 @@ def submit_deployment(filename):
 
 
 # terminate based on requestUUID (32-character hexadecimal string)
-@app.route("/terminate/<requestUUID>", methods=["POST"])
-def terminate_deployment(requestUUID):
+@app.route("/remove", methods=["POST"])
+def remove_deployment():
     try:
         payload_bytes = request.data
         requestUUID = payload_bytes.decode('UTF-8')
-        print('serrano_app - request to terminate deployment with UUID: %s' %(requestUUID))
+        print('serrano_app - request to remove deployment with UUID: %s' %(requestUUID))
 
         # query MongoDB to check if requestUUID is valid (deployment state == deployed)
-        db_client = get_db_client(mongodb_cfg['connection.uri'], mongodb_cfg['db_name'])
-        db_collection = db_client[mongodb_cfg['db_collection']]
-        depl_dict = db_collection.find_one({'requestUUID': requestUUID})
+        depl_dict = query_by_requestUUID(mongodb_cfg['connection.uri'], mongodb_cfg['db_name'], mongodb_cfg['db_collection'], requestUUID)
 
         if(depl_dict == None):
             print('serrano_app - deployment with UUID: %s does not exist' %(requestUUID))
@@ -76,12 +77,14 @@ def terminate_deployment(requestUUID):
         
         elif(depl_dict['state'] == DEPLOYED_STATE):
             p = Producer({'bootstrap.servers': kafka_cfg['bootstrap.servers']})
-            term_req = TerminationRequest(requestUUID=requestUUID, action=TERMINATE_ACTION, resource=depl_dict['resource'])
+            req = ComponentsRecord(requestUUID=requestUUID, action=REMOVE_ACTION)
+            req_str = record_to_string(req)
+            p.produce(topic=kafka_cfg['dispatcher'], value=req_str)
+            p.flush()
         
         # TODO: prevent deployment if it has not happend
         else:
             print('TODO: prevent deployment if it has not happend')
-
 
     except Exception as e:
         # return 400 BAD REQUEST
