@@ -53,6 +53,9 @@ Detailed info [here](https://www.mongodb.com/blog/post/getting-started-with-the-
 6. Check deployments in Kubernetes: ```kubectl get deployments```
 
 ## Project Layout
+
+serrano_app: Faust and Flask apps for the Request Handler API, Dispatcher, Resource Optimization Toolkit and Orchestrator components
+
 | Folder/File                       | Description                                                       |
 | --------------------------------- | ----------------------------------------------------------------- |
 | flask-start.sh                    | script to run the flask app (mod +x)                              |
@@ -63,9 +66,14 @@ Detailed info [here](https://www.mongodb.com/blog/post/getting-started-with-the-
 | src/helpers.py                    | helping functions                                                 |
 | src/resource_optimization_toolkit | top level dir of the resource optimization toolkit service        |
 | src/orchestrator                  | top level dir of the central orchestrator service                 |
-| src/drivers                       | top level dir of the drivers services                             |
-| src/drivers/agents.py             | faust async stream processors of drivers' topics                  |
-| src/drivers/kubernetes.py         | K8sDriver class to connect and interact with a kubernetes cluster |
+
+kubernetes_driver_app: 
+| src/agents.py                    | faust async stream processors of drivers' topics                  |
+| src/kubernetes_driver.py         | K8sDriver class to connect and interact with a kubernetes cluster |
+
+swarm_driver_app: 
+| src/agents.py               | faust async stream processors of drivers' topics                  |
+| src/swarm_driver.py         | K8sDriver class to connect and interact with a kubernetes cluster |
 
 ## Useful Commands
 
