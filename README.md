@@ -53,9 +53,6 @@ Detailed info [here](https://www.mongodb.com/blog/post/getting-started-with-the-
 6. Check deployments in Kubernetes: ```kubectl get deployments```
 
 ## Project Layout
-
-serrano_app: Faust and Flask apps for the Request Handler API, Dispatcher, Resource Optimization Toolkit and Orchestrator components
-
 | Folder/File                       | Description                                                       |
 | --------------------------------- | ----------------------------------------------------------------- |
 | flask-start.sh                    | script to run the flask app (mod +x)                              |
@@ -66,14 +63,9 @@ serrano_app: Faust and Flask apps for the Request Handler API, Dispatcher, Resou
 | src/helpers.py                    | helping functions                                                 |
 | src/resource_optimization_toolkit | top level dir of the resource optimization toolkit service        |
 | src/orchestrator                  | top level dir of the central orchestrator service                 |
-
-kubernetes_driver_app: 
-| src/agents.py                    | faust async stream processors of drivers' topics                  |
-| src/kubernetes_driver.py         | K8sDriver class to connect and interact with a kubernetes cluster |
-
-swarm_driver_app: 
-| src/agents.py               | faust async stream processors of drivers' topics                  |
-| src/swarm_driver.py         | K8sDriver class to connect and interact with a kubernetes cluster |
+| src/drivers                       | top level dir of the drivers services                             |
+| src/drivers/agents.py             | faust async stream processors of drivers' topics                  |
+| src/drivers/kubernetes.py         | K8sDriver class to connect and interact with a kubernetes cluster |
 
 ## Useful Commands
 
@@ -186,4 +178,4 @@ cd serrano_app
 3. deploy
 python3 ./deploy.py -yamlSpec /home/serrano/athina-thesis/ntua-thesis-orchestrator/serrano_app/app-k8s.yaml -env prod
 
---> add configs notes
+--> add kubeconfig note for k8s driver
