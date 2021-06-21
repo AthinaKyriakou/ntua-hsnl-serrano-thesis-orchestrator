@@ -16,17 +16,10 @@ k8s_driver = K8sDriver(kubeconfig_yaml=kafka_cfg['kubeconfig_yaml'])
 async def process_requests(requests):
     p = Producer({'bootstrap.servers': kafka_cfg['bootstrap.servers']})
     async for req in requests:
-        print('@@@@@HOLAAAA')
         
         if(req.action == DEPLOY_ACTION):
             print('kubernetes_driver_app - agents - data for requestUUID: %s received' % (req.requestUUID))
-            
-            # remove added labels
-            depl_spec = req.yamlSpec
-            depl_spec.pop('orchestrator')
-            depl_spec.pop('namespace')
-            depl_spec.pop('name')
-            ret = k8s_driver.deploy(dep_dict=depl_spec, namespace=req.namespace)
+            ret = k8s_driver.deploy(dep_dict=req.yamlSpec, namespace=req.namespace)
 
             # write to db_consumer topic
             namespace = req.yamlSpec.get('namespace')
@@ -53,3 +46,6 @@ async def process_requests(requests):
                 p.flush()
             else:
                 print('kubernetes_driver_app - agents - termination for requestUUID: %s failed with return code: %s' % (req.requestUUID, ret))
+        
+        else:
+            print('kubernetes_driver_app - agents - %s action not supported!' % req.action)

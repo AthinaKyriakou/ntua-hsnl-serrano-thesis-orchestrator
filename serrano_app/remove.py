@@ -17,6 +17,7 @@ def main():
         elif(env == 'prod'):
             # for prod
             postPath = os.path.join(flask_cfg['endpoint_prod'], REMOVE_ACTION)
+        print('remove to postPath: ', postPath)
         response = requests.post(postPath, data=requestUUID)
         print('remove -', response)
     else:

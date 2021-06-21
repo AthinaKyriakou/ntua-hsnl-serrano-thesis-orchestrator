@@ -59,7 +59,8 @@ class K8sDriver(object):
     def delete_deployment(self, namespace, name):
         apps_v1 = client.AppsV1Api()
         try:
-            api_response = apps_v1.delete_namespaced_deployment(name, namespace)
+            print('K8s Driver namespace: %s, name: %s' %(namespace, name))
+            api_response = apps_v1.delete_namespaced_deployment(name=name, namespace=namespace)
             #pprint(api_response)
             return 201
         except client.exceptions.ApiException as e:

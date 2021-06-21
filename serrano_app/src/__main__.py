@@ -20,6 +20,8 @@ def main():
     topic_list.append(NewTopic(kafka_cfg['swarm'], 1, 1))
     admin_client.create_topics(topic_list)
 
+    print('__main__ - done')
+
 if __name__ == '__main__':
     main()
     faust_app.main()

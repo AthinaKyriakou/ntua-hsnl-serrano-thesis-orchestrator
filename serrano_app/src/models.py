@@ -20,7 +20,7 @@ class SwarmRecord(faust.Record):
     #clusterInfo: str
     name: str
     yamlSpec: Dict[object, object] = None
-    action: str
+    #action: str
 
 class KubernetesRecord(faust.Record):
     requestUUID: str
