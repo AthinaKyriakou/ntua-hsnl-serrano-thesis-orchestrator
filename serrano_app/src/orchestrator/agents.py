@@ -14,7 +14,6 @@ orchestrator_topic = faust_app.topic(kafka_cfg['orchestrator'], value_type=Compo
 swarm_topic = faust_app.topic(kafka_cfg['swarm'], value_type=SwarmRecord)
 k8s_topic = faust_app.topic(kafka_cfg['kubernetes'], value_type=KubernetesRecord)
 
-
 @faust_app.agent(orchestrator_topic)
 async def process_requests(requests):
     p = Producer({'bootstrap.servers': kafka_cfg['bootstrap.servers']})
@@ -22,23 +21,22 @@ async def process_requests(requests):
         print('Orchestrator - data received')
         
         if(req.action == DEPLOY_ACTION):
-            
             selected_orchestrator = req.yamlSpec.get('orchestrator')
-            req.yamlSpec.pop('orchestrator')
+            name = req.yamlSpec.get('name')
+            namespace = req.yamlSpec.get('namespace')
 
             if(selected_orchestrator == SWARM):
-                await swarm_topic.send(value=req)
+                record = SwarmRecord(requestUUID=req.requestUUID, name=name, yamlSpec=req.yamlSpec, action=req.action)
+                await swarm_topic.send(value=record)
             elif(selected_orchestrator == K8s):
-                await k8s_topic.send(value=req)
+                record = KubernetesRecord(requestUUID=req.requestUUID, namespace=namespace, name=name, yamlSpec=req.yamlSpec, action=req.action)
+                await k8s_topic.send(value=record)
             else:
                 print('Orchestrator - no driver for %s found' %(selected_orchestrator))
             
             # write to db_consumer topic - TODO: add and remove later a deployment/stack name label
             if(selected_orchestrator == SWARM or selected_orchestrator == K8s):
-                namespace = req.yamlSpec.get('namespace')
-                name = req.yamlSpec.get('name')
                 timestamp = json.dumps(datetime.datetime.now(), indent=4, sort_keys=True, default=str)
-                
                 db_rec = DatabaseRecord(requestUUID=req.requestUUID, namespace=namespace, name=name, state=PENDING_STATE, resource=selected_orchestrator, yamlSpec=req.yamlSpec, timestamp=timestamp)
                 db_rec_str = record_to_string(db_rec)
                 p.produce(topic=kafka_cfg['db_consumer'], value=db_rec_str)
@@ -47,10 +45,9 @@ async def process_requests(requests):
         elif(req.action == REMOVE_ACTION):
             # get from the mongoDB the information needed to remove the stack / deployment 
             info_dict = query_by_requestUUID(mongodb_cfg['connection.uri'], mongodb_cfg['db_name'], mongodb_cfg['db_collection'], req.requestUUID)
-            
             if(info_dict['resource'] == SWARM):
-                record = SwarmRecord(requestUUID=req.requestUUID, name=info_dict['name'], yamlSpec=info_dict['yamlSpec'])
+                record = SwarmRecord(requestUUID=req.requestUUID, name=info_dict['name'], yamlSpec=info_dict['yamlSpec'], action=req.action)
                 await swarm_topic.send(value=record)
             elif(info_dict['resource']  == K8s):
-                record = KubernetesRecord(requestUUID=req.requestUUID, namespace=info_dict['namespace'], name=info_dict['name'], yamlSpec=info_dict['yamlSpec'])
-                await k8s_topic.send(value=record)         
+                record = KubernetesRecord(requestUUID=req.requestUUID, namespace=info_dict['namespace'], name=info_dict['name'], yamlSpec=info_dict['yamlSpec'], action=req.action)
+                await k8s_topic.send(value=record)

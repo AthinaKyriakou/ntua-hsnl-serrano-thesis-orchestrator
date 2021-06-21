@@ -1,10 +1,10 @@
 from faust_app import faust_app
 from confluent_kafka import Producer
-from src.config import kafka_cfg, DEPLOY_ACTION, INSPECT_ACTION, REMOVE_ACTION, DISPATCHED_STATE
-from src.models import ComponentsRecord, DatabaseRecord
-from src.utils.faust_helpers import record_to_string
 import datetime
 import json
+from src.config import kafka_cfg, DEPLOY_ACTION, INSPECT_ACTION, REMOVE_ACTION, DISPATCHED_STATE
+from src.utils.faust_helpers import record_to_string
+from src.models import DatabaseRecord, ComponentsRecord
 
 # register the used topics in the faust app
 print('Dispatcher - global checks')
