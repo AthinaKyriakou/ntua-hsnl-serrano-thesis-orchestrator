@@ -16,3 +16,4 @@ class KubernetesRecord(faust.Record):
     namespace: str
     name: str
     yamlSpec: Dict[object, object]
+    action: str

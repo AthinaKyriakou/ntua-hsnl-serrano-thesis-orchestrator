@@ -26,10 +26,10 @@ async def process_requests(requests):
             namespace = req.yamlSpec.get('namespace')
 
             if(selected_orchestrator == SWARM):
-                record = SwarmRecord(requestUUID=req.requestUUID, name=name, yamlSpec=req.yamlSpec)
+                record = SwarmRecord(requestUUID=req.requestUUID, name=name, yamlSpec=req.yamlSpec, action=req.action)
                 await swarm_topic.send(value=record)
             elif(selected_orchestrator == K8s):
-                record = KubernetesRecord(requestUUID=req.requestUUID, namespace=namespace, name=name, yamlSpec=req.yamlSpec)
+                record = KubernetesRecord(requestUUID=req.requestUUID, namespace=namespace, name=name, yamlSpec=req.yamlSpec, action=req.action)
                 await k8s_topic.send(value=record)
             else:
                 print('Orchestrator - no driver for %s found' %(selected_orchestrator))
@@ -46,8 +46,8 @@ async def process_requests(requests):
             # get from the mongoDB the information needed to remove the stack / deployment 
             info_dict = query_by_requestUUID(mongodb_cfg['connection.uri'], mongodb_cfg['db_name'], mongodb_cfg['db_collection'], req.requestUUID)
             if(info_dict['resource'] == SWARM):
-                record = SwarmRecord(requestUUID=req.requestUUID, name=info_dict['name'], yamlSpec=info_dict['yamlSpec'])
+                record = SwarmRecord(requestUUID=req.requestUUID, name=info_dict['name'], yamlSpec=info_dict['yamlSpec'], action=req.action)
                 await swarm_topic.send(value=record)
             elif(info_dict['resource']  == K8s):
-                record = KubernetesRecord(requestUUID=req.requestUUID, namespace=info_dict['namespace'], name=info_dict['name'], yamlSpec=info_dict['yamlSpec'])
+                record = KubernetesRecord(requestUUID=req.requestUUID, namespace=info_dict['namespace'], name=info_dict['name'], yamlSpec=info_dict['yamlSpec'], action=req.action)
                 await k8s_topic.send(value=record)
