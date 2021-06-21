@@ -8,9 +8,11 @@ import json
 
 # register the used topics in the faust app
 print('Dispatcher - global checks')
+
 dispatcher = faust_app.topic(kafka_cfg['dispatcher'], value_type=ComponentsRecord)
 resource_optimization_toolkit = faust_app.topic(kafka_cfg['resource_optimization_toolkit'], value_type=ComponentsRecord)
 orchestrator = faust_app.topic(kafka_cfg['orchestrator'], value_type=ComponentsRecord)
+
        
 @faust_app.agent(dispatcher)
 async def process_requests(requests):

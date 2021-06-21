@@ -1,0 +1,21 @@
+# https://github.com/compose-spec/compose-spec/blob/master/spec.md#compose-file
+
+# complete docker compose file used for swarm stack deployments
+
+# deprecated field, specified for backward compatibility, only informative
+version:
+
+# service: an abstract definition of a computing resource within an application
+# backed by a set of containers, run 
+services:
+    foo:
+        image: foo
+        command: top
+        hostname: your-name
+        profiles:
+            - test
+
+networks:
+volumes:
+configs:
+sercrets:
