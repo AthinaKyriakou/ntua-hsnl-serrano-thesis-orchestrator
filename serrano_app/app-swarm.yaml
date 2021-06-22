@@ -6,7 +6,7 @@ services:
     ports:
       - "8005:8080"
 
-# custom added label, should be removed before deployment
+# custom added labels, no need to remove before deployment
 orchestrator: swarm
-name: my_swarm_app
-namespace: 'default'
+name: another_day_in_paradise
+namespace: default

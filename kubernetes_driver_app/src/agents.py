@@ -1,4 +1,3 @@
-import faust
 from faust_app import faust_app
 from confluent_kafka import Producer
 from config import kafka_cfg, DEPLOYED_STATE, FAILED_STATE, REMOVED_STATE, DEPLOY_ACTION, REMOVE_ACTION, K8s

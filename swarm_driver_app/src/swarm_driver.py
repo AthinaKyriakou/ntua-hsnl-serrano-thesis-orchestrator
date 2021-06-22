@@ -3,6 +3,7 @@ import yaml
 import os
 import subprocess
 from config import SWARM_DEPL_DIR
+from helpers import remove_added_labels
 
 class SwarmDriver(object):
     
@@ -33,13 +34,15 @@ class SwarmDriver(object):
             print('SwarmDriver - get_stacks exception: %s' % e)
 
     # check if a docker file is needed for custom images
-    def deploy(self, dep_dict):
+    def deploy(self, requestUUID, dep_dict):
         try:
             # TODO: pass into configuration file + put UUID in file name
-            compose_file_path = os.path.join(SWARM_DEPL_DIR, 'test.yaml')
+            stack_name = dep_dict.get('name')
+            yamlName = requestUUID + '.yaml'
+            yamlSpec = remove_added_labels(dep_dict)
+            compose_file_path = os.path.join(SWARM_DEPL_DIR, yamlName)
             with open(compose_file_path, 'w') as yaml_file:
-                yaml.dump(dep_dict, yaml_file, default_flow_style=False)
-            stack_name = 'stack_name'
+                yaml.dump(yamlSpec, yaml_file, default_flow_style=False)
             subprocess.run('docker stack deploy --compose-file %s --orchestrator swarm %s' %(compose_file_path, stack_name), check=True, shell=True)
             print('SwarmDriver - stack %s created' %(stack_name))
             return 201

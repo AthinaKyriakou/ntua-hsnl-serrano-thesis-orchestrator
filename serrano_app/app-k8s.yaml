@@ -20,7 +20,7 @@ spec:
         ports:
         - containerPort: 80
 
-# custom added label, should be removed before deployment
+# custom added labels, no need to remove before deployment
 orchestrator: k8s
 name: nginx-deployment
 namespace: 'default'

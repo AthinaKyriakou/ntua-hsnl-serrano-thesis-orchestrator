@@ -42,6 +42,5 @@ kafka_cfg = {
     'resource_optimization_toolkit': 'resource_optimization_toolkit',
     'orchestrator': 'orchestrator',
     'kubernetes': 'kubernetes',
-    'swarm': 'swarm',
     'db_consumer': 'db_consumer',
 }

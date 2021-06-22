@@ -184,4 +184,6 @@ python3 ./deploy.py -yamlSpec /home/serrano/athina-thesis/ntua-thesis-orchestrat
 /home/athina/python-virtual-environments/thesis/bin/python /home/athina/Desktop/thesis/code/ntua_diploma_thesis/serrano_app/remove.py -requestUUID 9d4abde019d64013810f6fa91c029e65 -env local
 
 5. deploy local:
- /home/athina/python-virtual-environments/thesis/bin/python /home/athina/Desktop/thesis/code/ntua_diploma_thesis/serrano_app/deploy.py -yamlSpec /home/athina/Desktop/thesis/code/ntua_diploma_thesis/serrano_app/app-k8s.yaml -env local
+k8s:  /home/athina/python-virtual-environments/thesis/bin/python /home/athina/Desktop/thesis/code/ntua_diploma_thesis/serrano_app/deploy.py -yamlSpec /home/athina/Desktop/thesis/code/ntua_diploma_thesis/serrano_app/app-k8s.yaml -env local
+
+swarm:  /home/athina/python-virtual-environments/thesis/bin/python /home/athina/Desktop/thesis/code/ntua_diploma_thesis/serrano_app/deploy.py -yamlSpec /home/athina/Desktop/thesis/code/ntua_diploma_thesis/serrano_app/app-swarm.yaml -env local
