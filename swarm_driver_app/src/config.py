@@ -40,3 +40,9 @@ kafka_cfg = {
     'swarm': 'swarm',
     'db_consumer': 'db_consumer',
 }
+
+mongodb_cfg = {
+    'connection.uri': 'mongodb://athina_kyriakou:123@ntua-thesis-cluster-shard-00-00.xcgej.mongodb.net:27017,ntua-thesis-cluster-shard-00-01.xcgej.mongodb.net:27017,ntua-thesis-cluster-shard-00-02.xcgej.mongodb.net:27017/myFirstDatabase?ssl=true&replicaSet=atlas-xirr44-shard-0&authSource=admin&retryWrites=true&w=majority',
+    'db_name': 'thesisdb',
+    'db_collection': 'db_consumer',
+}
