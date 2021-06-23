@@ -32,7 +32,19 @@ async def process_requests(requests):
             p.produce(topic=kafka_cfg['db_consumer'], value=db_rec_str)
             p.flush()
 
-
-# write the terminate function
-
-# check models + config
+        elif(req.action == REMOVE_ACTION):
+            print('swarm_driver_app - agents - termination for requestUUID: %s received' % (req.requestUUID))
+            ret = swarm_driver.delete_stack(name=req.name)
+            
+            # write to db_consumer topic
+            timestamp = json.dumps(datetime.datetime.now(), indent=4, sort_keys=True, default=str)
+            if(ret == 201):
+                db_rec = DatabaseRecord(requestUUID=req.requestUUID, namespace=req.namespace, name=req.name, state=REMOVED_STATE, resource=SWARM, yamlSpec=req.yamlSpec, timestamp=timestamp)
+                db_rec_str = record_to_string(db_rec)
+                p.produce(topic=kafka_cfg['db_consumer'], value=db_rec_str)
+                p.flush()
+            else:
+                print('swarm_driver_app - agents - termination for requestUUID: %s failed with return code: %s' % (req.requestUUID, ret))
+        
+        else:
+            print('swarm_driver_app - agents - %s action not supported!' % req.action)

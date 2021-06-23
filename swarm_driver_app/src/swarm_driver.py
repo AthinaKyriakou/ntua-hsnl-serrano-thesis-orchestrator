@@ -4,6 +4,7 @@ import os
 import subprocess
 from config import SWARM_DEPL_DIR
 from helpers import remove_added_labels
+import copy
 
 class SwarmDriver(object):
     
@@ -39,7 +40,7 @@ class SwarmDriver(object):
             # TODO: pass into configuration file + put UUID in file name
             stack_name = dep_dict.get('name')
             yamlName = requestUUID + '.yaml'
-            yamlSpec = remove_added_labels(dep_dict)
+            yamlSpec = remove_added_labels(copy.deepcopy(dep_dict))
             compose_file_path = os.path.join(SWARM_DEPL_DIR, yamlName)
             with open(compose_file_path, 'w') as yaml_file:
                 yaml.dump(yamlSpec, yaml_file, default_flow_style=False)
@@ -48,4 +49,14 @@ class SwarmDriver(object):
             return 201
         except subprocess.CalledProcessError as e:
             print('SwarmDriver - deployment exception: %s' % e)
+            return 400
+
+    # delete stack by name
+    def delete_stack(self, name):
+        try:
+            print('Swarm Driver name: %s' %(name))
+            subprocess.run('docker stack rm %s --orchestrator swarm' %(name), check=True, shell=True)
+            return 201
+        except subprocess.CalledProcessError as e:
+            print('SwarmDriver - termination of %s exception: %s' % (name, e))
             return 400

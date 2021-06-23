@@ -36,6 +36,7 @@ async def process_requests(requests):
         elif(req.action == REMOVE_ACTION):
             print('kubernetes_driver_app - agents - termination for requestUUID: %s received' % (req.requestUUID))
             ret = k8s_driver.delete_deployment(namespace=req.namespace, name=req.name)
+            
             # write to db_consumer topic
             timestamp = json.dumps(datetime.datetime.now(), indent=4, sort_keys=True, default=str)
             if(ret == 201):
