@@ -1,0 +1,351 @@
+# app described both in swarm and in k8s
+# from: https://github.com/dockersamples/example-voting-app 
+
+# custom labels added by the user
+name: another_day_in_paradise
+namespace: vote
+
+# custom labels added by the algorithm of ROT
+# orchestrator: k8s
+
+# TODO: might need to add in the required too
+# app requirements
+appCores: 2 
+appRAMGB: 2
+appStorageGB: 30
+
+# per service (swarm) / deployment (k8s) requirements
+app_comp_reqs:
+  redis:
+    RAMGB: 0.2
+    storageGB: 5
+    cores: 2
+  db:
+    RAMGB: 0.7
+    storageGB: 12.5
+    cores: 2
+  vote:
+    RAMGB: 0.4
+    storageGB: 2.5
+    cores: 1
+  result:
+    RAMGB: 0.1
+    storageGB: 2.5
+    cores: 1
+  worker:
+    RAMGB: 0.6
+    storageGB: 7.5
+    cores: 1
+
+swarmSpec:
+  version: "3"
+  services:
+    redis:
+      image: redis:alpine
+      networks:
+        - frontend
+      deploy:
+        replicas: 1
+        update_config:
+          parallelism: 2
+          delay: 10s
+        restart_policy:
+          condition: on-failure
+    db:
+      image: postgres:9.4
+      environment:
+        POSTGRES_USER: "postgres"
+        POSTGRES_PASSWORD: "postgres"
+      volumes:
+        - db-data:/var/lib/postgresql/data
+      networks:
+        - backend
+      deploy:
+        placement:
+          constraints: [node.role == manager]
+    vote:
+      image: dockersamples/examplevotingapp_vote:before
+      ports:
+        - 5000:80
+      networks:
+        - frontend
+      depends_on:
+        - redis
+      deploy:
+        replicas: 2
+        update_config:
+          parallelism: 2
+        restart_policy:
+          condition: on-failure
+    result:
+      image: dockersamples/examplevotingapp_result:before
+      ports:
+        - 5001:80
+      networks:
+        - backend
+      depends_on:
+        - db
+      deploy:
+        replicas: 1
+        update_config:
+          parallelism: 2
+          delay: 10s
+        restart_policy:
+          condition: on-failure
+    worker:
+      image: dockersamples/examplevotingapp_worker
+      networks:
+        - frontend
+        - backend
+      depends_on:
+        - db
+        - redis
+      deploy:
+        mode: replicated
+        replicas: 1
+        labels: [APP=VOTING]
+        restart_policy:
+          condition: on-failure
+          delay: 10s
+          max_attempts: 3
+          window: 120s
+        placement:
+          constraints: [node.role == manager]
+    visualizer:
+      image: dockersamples/visualizer:stable
+      ports:
+        - "8080:8080"
+      stop_grace_period: 1m30s
+      volumes:
+        - "/var/run/docker.sock:/var/run/docker.sock"
+      deploy:
+        placement:
+          constraints: [node.role == manager]
+  networks:
+    frontend:
+    backend:
+  volumes:
+    db-data:
+
+
+# kubectl create namespace vote
+kubernetesSpec:
+  services:
+    name: db-service
+    yamlSpec:
+      apiVersion: v1
+      kind: Service
+      metadata:
+        labels:
+          app: db
+        name: db
+        namespace: vote
+      spec:
+        type: ClusterIP
+        ports:
+        - name: "db-service"
+          port: 5432
+          targetPort: 5432
+        selector:
+          app: db
+
+    name: redis-service
+    yamlSpec:
+      apiVersion: v1
+      kind: Service
+      metadata:
+        labels:
+          app: redis
+        name: redis
+        namespace: vote
+      spec:
+        type: ClusterIP
+        ports:
+        - name: "redis-service"
+          port: 6379
+          targetPort: 6379
+        selector:
+          app: redis
+
+    name: result-service
+    yamlSpec:
+      apiVersion: v1
+      kind: Service
+      metadata:
+        labels:
+          app: result
+        name: result
+        namespace: vote
+      spec:
+        type: NodePort
+        ports:
+        - name: "result-service"
+          port: 5001
+          targetPort: 80
+          nodePort: 31001
+        selector:
+          app: result
+
+    name: result-service
+    yamlSpec:
+      apiVersion: v1
+      kind: Service
+      metadata:
+        labels:
+          app: vote
+        name: vote
+        namespace: vote
+      spec:
+        type: NodePort
+        ports:
+        - name: "vote-service"
+          port: 5000
+          targetPort: 80
+          nodePort: 31000
+        selector:
+          app: vote
+
+  deployments:
+    name: db-deployment
+    yamlSpec:
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        labels:
+          app: db
+        name: db
+        namespace: vote
+      spec:
+        replicas: 1
+        selector:
+          matchLabels:
+            app: db
+        template:
+          metadata:
+            labels:
+              app: db
+          spec:
+            containers:
+            - image: postgres:9.4
+              name: postgres
+              env:
+              - name: POSTGRES_USER
+                value: postgres
+              - name: POSTGRES_PASSWORD
+                value: postgres
+              ports:
+              - containerPort: 5432
+                name: postgres
+              volumeMounts:
+              - mountPath: /var/lib/postgresql/data
+                name: db-data
+            volumes:
+            - name: db-data
+              emptyDir: {} 
+
+    name: redis-deployment
+    yamlSpec:
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        labels:
+          app: redis
+        name: redis
+        namespace: vote
+      spec:
+        replicas: 1
+        selector:
+          matchLabels:
+            app: redis
+        template:
+          metadata:
+            labels:
+              app: redis
+          spec:
+            containers:
+            - image: redis:alpine
+              name: redis
+              ports:
+              - containerPort: 6379
+                name: redis
+              volumeMounts:
+              - mountPath: /data
+                name: redis-data
+            volumes:
+            - name: redis-data
+              emptyDir: {} 
+
+    name: result-deployment
+    yamlSpec:
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        labels:
+          app: result
+        name: result
+        namespace: vote
+      spec:
+        replicas: 1
+        selector:
+          matchLabels:
+            app: result
+        template:
+          metadata:
+            labels:
+              app: result
+          spec:
+            containers:
+            - image: dockersamples/examplevotingapp_result:before
+              name: result
+              ports:
+              - containerPort: 80
+                name: result
+
+    name: vote-deployment
+    yamlSpec:
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        labels:
+          app: vote
+        name: vote
+        namespace: vote
+      spec:
+        replicas: 1
+        selector:
+          matchLabels:
+            app: vote
+        template:
+          metadata:
+            labels:
+              app: vote
+          spec:
+            containers:
+            - image: dockersamples/examplevotingapp_vote:before
+              name: vote
+              ports:
+              - containerPort: 80
+                name: vote
+
+    name: worker-deployment
+    yamlSpec:
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        labels:
+          app: worker
+        name: worker
+        namespace: vote
+      spec:
+        replicas: 1
+        selector:
+          matchLabels:
+            app: worker
+        template:
+          metadata:
+            labels:
+              app: worker
+          spec:
+            containers:
+            - image: dockersamples/examplevotingapp_worker
+              name: worker

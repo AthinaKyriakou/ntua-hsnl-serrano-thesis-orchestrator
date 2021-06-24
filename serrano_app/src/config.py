@@ -23,6 +23,12 @@ flask_cfg = {
     'endpoint_prod': 'http://147.102.16.113:5000',
 }
 
+telemetry_cfg = {
+    'endpoint': 'http://147.102.22.142:5000',
+    'clusters.uri': 'telemetry/sites',
+    'node.uri': 'telemetry/site',           # /telemetry/site/SITE_ID
+}
+
 kafka_cfg = {
     # kafka producer, k8s driver
     'bootstrap.servers': 'localhost:9092',
@@ -58,4 +64,9 @@ mongodb_cfg = {
     'connection.uri': 'mongodb://athina_kyriakou:123@ntua-thesis-cluster-shard-00-00.xcgej.mongodb.net:27017,ntua-thesis-cluster-shard-00-01.xcgej.mongodb.net:27017,ntua-thesis-cluster-shard-00-02.xcgej.mongodb.net:27017/myFirstDatabase?ssl=true&replicaSet=atlas-xirr44-shard-0&authSource=admin&retryWrites=true&w=majority',
     'db_name': 'thesisdb',
     'db_collection': 'db_consumer',
+}
+
+dummy_algorithm_cfg = {
+    'weight_RAM': 0.6, 
+    'weight_storage': 0.4,
 }

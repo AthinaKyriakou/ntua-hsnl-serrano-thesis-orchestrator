@@ -1,6 +1,8 @@
 from faust_app import faust_app
 from src.models import ComponentsRecord
 from src.config import kafka_cfg, DEPLOY_ACTION
+from src.resource_optimization_toolkit.rot_algorithm import dummy_algorithm
+import copy
 
 # register the used topics in the faust app
 print('ROT - global checks')
@@ -13,4 +15,7 @@ async def process_requests(requests):
     async for req in requests:
         print('Resource Optimization Toolkit - data received')
         if(req.action == DEPLOY_ACTION):
+            # the algorithm to add labels regarding (a) selected CO site, (b) node preferences per service
+            configured_yamlSpec = dummy_algorithm(copy.deepcopy(req.yamlSpec))
+            req.yamlSpec = configured_yamlSpec
             await orchestrator_topic.send(value=req)
