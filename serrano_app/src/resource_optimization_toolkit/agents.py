@@ -15,7 +15,10 @@ async def process_requests(requests):
     async for req in requests:
         print('Resource Optimization Toolkit - data received')
         if(req.action == DEPLOY_ACTION):
-            # the algorithm to add labels regarding (a) selected CO site, (b) node preferences per service
-            configured_yamlSpec = dummy_algorithm(copy.deepcopy(req.yamlSpec))
-            req.yamlSpec = configured_yamlSpec
+            # the algorithm to add labels regarding (a) selected CO site, (b) node preferences per app component
+            try:
+                configured_yamlSpec = dummy_algorithm(copy.deepcopy(req.yamlSpec))
+                req.yamlSpec = configured_yamlSpec
+            except Exception as e:
+                print('Resource Optimization Toolkit - exception: %s in algorithm implementation, no labels added' % (e))
             await orchestrator_topic.send(value=req)

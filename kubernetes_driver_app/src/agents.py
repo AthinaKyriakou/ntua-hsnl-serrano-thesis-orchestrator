@@ -1,9 +1,9 @@
 from faust_app import faust_app
 from confluent_kafka import Producer
-from config import kafka_cfg, DEPLOYED_STATE, FAILED_STATE, REMOVED_STATE, DEPLOY_ACTION, REMOVE_ACTION, K8s
+from config import kafka_cfg, DEPLOYED_STATE, FAILED_STATE, REMOVED_STATE, DEPLOY_ACTION, REMOVE_ACTION, K8s, mongodb_cfg
 from models import KubernetesRecord, DatabaseRecord
 from kubernetes_driver import K8sDriver
-from helpers import record_to_string
+from helpers import record_to_string, query_by_requestUUID
 import datetime
 import json
 
@@ -25,10 +25,12 @@ async def process_requests(requests):
             name = req.yamlSpec.get('name')
             timestamp = json.dumps(datetime.datetime.now(), indent=4, sort_keys=True, default=str)
             
+            # TODO: not best practice to query DB
+            db_yamlSpec = query_by_requestUUID(mongodb_cfg['connection.uri'], mongodb_cfg['db_name'], mongodb_cfg['db_collection'], req.requestUUID)['yamlSpec']
             if(ret==201):
-                db_rec = DatabaseRecord(requestUUID=req.requestUUID, namespace=namespace, name=name, state=DEPLOYED_STATE, resource=K8s, yamlSpec=req.yamlSpec, timestamp=timestamp)
+                db_rec = DatabaseRecord(requestUUID=req.requestUUID, namespace=namespace, name=name, state=DEPLOYED_STATE, resource=K8s, yamlSpec=db_yamlSpec, timestamp=timestamp)
             else:
-                db_rec = DatabaseRecord(requestUUID=req.requestUUID, namespace=namespace, name=name, state=FAILED_STATE, resource=K8s, yamlSpec=req.yamlSpec, timestamp=timestamp)
+                db_rec = DatabaseRecord(requestUUID=req.requestUUID, namespace=namespace, name=name, state=FAILED_STATE, resource=K8s, yamlSpec=db_yamlSpec, timestamp=timestamp)
             db_rec_str = record_to_string(db_rec)
             p.produce(topic=kafka_cfg['db_consumer'], value=db_rec_str)
             p.flush()

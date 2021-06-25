@@ -5,8 +5,10 @@ from src.config import kafka_cfg, SWARM, K8s, PENDING_STATE, DEPLOY_ACTION, REMO
 from src.models import ComponentsRecord, DatabaseRecord, KubernetesRecord, SwarmRecord
 from src.utils.faust_helpers import record_to_string
 from src.utils.mongodb_helpers import query_by_requestUUID
+from src.orchestrator.helpers import filter_yamlSpec
 import datetime
 import json
+import copy
 
 # register the used topics in the faust app
 print('Orchestrator - global checks')
@@ -24,17 +26,18 @@ async def process_requests(requests):
             selected_orchestrator = req.yamlSpec.get('orchestrator')
             name = req.yamlSpec.get('name')
             namespace = req.yamlSpec.get('namespace')
+            filtered_yamlSpec = filter_yamlSpec(copy.deepcopy(req.yamlSpec), selected_orchestrator)
 
             if(selected_orchestrator == SWARM):
-                record = SwarmRecord(requestUUID=req.requestUUID, namespace=namespace, name=name, yamlSpec=req.yamlSpec, action=req.action)
+                record = SwarmRecord(requestUUID=req.requestUUID, namespace=namespace, name=name, yamlSpec=filtered_yamlSpec, action=req.action)
                 await swarm_topic.send(value=record)
             elif(selected_orchestrator == K8s):
-                record = KubernetesRecord(requestUUID=req.requestUUID, namespace=namespace, name=name, yamlSpec=req.yamlSpec, action=req.action)
+                record = KubernetesRecord(requestUUID=req.requestUUID, namespace=namespace, name=name, yamlSpec=filtered_yamlSpec, action=req.action)
                 await k8s_topic.send(value=record)
             else:
                 print('Orchestrator - no driver for %s found' %(selected_orchestrator))
             
-            # write to db_consumer topic - TODO: add and remove later a deployment/stack name label
+            # write to db_consumer topic
             if(selected_orchestrator == SWARM or selected_orchestrator == K8s):
                 timestamp = json.dumps(datetime.datetime.now(), indent=4, sort_keys=True, default=str)
                 db_rec = DatabaseRecord(requestUUID=req.requestUUID, namespace=namespace, name=name, state=PENDING_STATE, resource=selected_orchestrator, yamlSpec=req.yamlSpec, timestamp=timestamp)

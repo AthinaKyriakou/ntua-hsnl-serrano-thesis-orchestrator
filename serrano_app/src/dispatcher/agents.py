@@ -25,7 +25,7 @@ async def process_requests(requests):
             # write to ROT topic
             await resource_optimization_toolkit.send(value=req)
 
-            # write to db_consumer topic - TODO: add and remove later a deployment/stack name label
+            # write to db_consumer topic
             namespace = req.yamlSpec.get('namespace')
             name = req.yamlSpec.get('name')
             timestamp = json.dumps(datetime.datetime.now(), indent=4, sort_keys=True, default=str)

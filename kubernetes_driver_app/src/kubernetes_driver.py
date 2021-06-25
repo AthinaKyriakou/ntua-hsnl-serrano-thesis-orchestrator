@@ -4,9 +4,14 @@ import yaml
 from kubernetes import client
 from kubernetes.client import Configuration
 from kubernetes.config import kube_config
+from kubernetes_driver_app.src.helpers import add_node_affinity
+import copy
 
 SUCCESS = 'SUCCESS'
 FAILURE = 'FAILURE'
+PREFERRED = 'preferredDuringSchedulingIgnoredDuringExecution'
+IN_OPP = 'In'
+IP = 'ip'
 
 class K8sDriver(object):
     
@@ -45,11 +50,40 @@ class K8sDriver(object):
                 print('%s\t%s\t%s' % (i.status.pod_ip, i.metadata.namespace, i.metadata.name))
     
     def deploy(self, dep_dict, namespace):
+        # TODO: select spec file to keep, add preference labels if specified, create each service & deployment
+        core_v1 = client.CoreV1Api()
         apps_v1 = client.AppsV1Api()
         try:
-            api_response = apps_v1.create_namespaced_deployment(body=dep_dict, namespace=namespace)
+            # create namespace
+            api_response = core_v1.create_namespace(namespace=namespace)
+            print('K8sDriver - namespace %s created with status=%s' % (namespace, api_response.metadata.name))
+
+            k8s_services = dep_dict['spec']['services']
+            k8s_deployments = dep_dict['spec']['deployments']
+            comp_preferences = dep_dict['comp_preferences']
+
+            print('\n\n@@@@ Deployments')
+            print(k8s_deployments)
+
+            print('\n\n@@@@ Preferences')
+            print(comp_preferences)
+
+            # configure the labels in the deployments
+            for comp, info in k8s_deployments:
+                yamlSpec = info['yamlSpec']
+                nodeIP = comp_preferences[comp]
+                info['yamlSpec'] = add_node_affinity(copy.deepcopy(yamlSpec), IP, nodeIP, IN_OPP, PREFERRED, 100)
+
+
+            # create the services
+
+
+            # create the deployments
+
+
+            #api_response = apps_v1.create_namespaced_deployment(body=dep_dict, namespace=namespace)
             #pprint(api_response)
-            print('K8sDriver - deployment created with status=%s' % api_response.metadata.name)
+            #print('K8sDriver - deployment created with status=%s' % api_response.metadata.name)
             return 201
         except client.exceptions.ApiException as e:
             print('K8sDriver - deployment exception: %s' % e)

@@ -5,17 +5,17 @@ import copy
 import sys
 
 import yaml
-#from config import telemetry_cfg, dummy_algorithm_cfg, SWARM, K8s
-#from src.resource_optimization_toolkit.helpers import TelemetryHandlerException, CustomException
+from config import telemetry_cfg, dummy_algorithm_cfg, SWARM, K8s
+from src.resource_optimization_toolkit.helpers import TelemetryHandlerException, CustomException
 
 ## ONLY FOR TEST
-from helpers import TelemetryHandlerException, CustomException
+#from helpers import TelemetryHandlerException, CustomException
 # import from parent dir: https://codeolives.com/2020/01/10/python-reference-module-in-parent-directory/
-import inspect
-currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
-parentdir = os.path.dirname(currentdir)
-sys.path.insert(0, parentdir)
-from config import telemetry_cfg, dummy_algorithm_cfg, SWARM, K8s
+#import inspect
+#currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
+#parentdir = os.path.dirname(currentdir)
+#sys.path.insert(0, parentdir)
+#from config import telemetry_cfg, dummy_algorithm_cfg, SWARM, K8s
 
 def get_site_info(siteID):
     # call to the telemetry endpoint to get info about the available sites
@@ -131,8 +131,8 @@ def set_node_preferences(yamlSpec, site_dict):
         worker_nodes['147.102.22.150'] = site_dict['worker_nodes'][0]
         worker_nodes['147.102.22.151'] = site_dict['worker_nodes'][1]
     elif(yamlSpec['orchestrator'] == K8s):
-        worker_nodes['83.212.102.89'] = site_dict['worker_nodes'][0]
-        worker_nodes['83.212.98.176'] = site_dict['worker_nodes'][1]
+        worker_nodes['192.168.19.159'] = site_dict['worker_nodes'][0]
+        worker_nodes['192.168.19.160'] = site_dict['worker_nodes'][1]
     
     #print(worker_nodes)
     
@@ -147,6 +147,7 @@ def set_node_preferences(yamlSpec, site_dict):
         if(w_storage > max_worker_storage):
             max_worker_storage = w_storage
 
+    yamlSpec['comp_preferences'] = {}
     for t in comp_values_list:
         comp = t[0]
         comp_workerIP = None
@@ -169,7 +170,7 @@ def set_node_preferences(yamlSpec, site_dict):
         
         if(comp_workerIP != None):
             # set the worker IP for the component and reduce available RAM and storage
-            yamlSpec[comp] = comp_workerIP
+            yamlSpec['comp_preferences'][comp] = comp_workerIP
             worker_nodes[comp_workerIP]['available_ram_GB'] = worker_nodes[comp_workerIP]['available_ram_GB'] - comp_RAM
             worker_nodes[comp_workerIP]['available_storage_GB'] = worker_nodes[comp_workerIP]['available_storage_GB'] - comp_storage
 
@@ -207,24 +208,16 @@ def dummy_algorithm(yamlSpec):
             found_site_orchestrator = site['orchestrator']
             break
 
-    print('Resource Optimization Toolkit - rot_algorithm - found site id %s, found site orchestrator %s' %(found_siteID, found_site_orchestrator))
+    #print('Resource Optimization Toolkit - rot_algorithm - found site id %s, found site orchestrator %s' %(found_siteID, found_site_orchestrator))
 
     if(found_site_orchestrator == 'SWARM'):
-        # TODO: add this logic to the driver - needs to translate general instructions to the specific resource
-        #updated_yamlSpec = copy.deepcopy(yamlSpec['swarmSpec'])
-        #updated_yamlSpec['name'] = yamlSpec['name']
         yamlSpec['orchestrator'] = SWARM
     
     elif(found_site_orchestrator == 'K8S'):
-        # TODO: add this logic to the driver - needs to translate general instructions to the specific resource
-        #updated_yamlSpec = copy.deepcopy(yamlSpec['kubernetesSpec'])
-        #updated_yamlSpec['namespace'] = yamlSpec['namespace']
-        #updated_yamlSpec['name'] = yamlSpec['name']
         yamlSpec['orchestrator'] = K8s
     
     else:
         raise CustomException('No configuration for %s local orchestrator' %(found_site_orchestrator))
     
-    set_node_preferences(yamlSpec, detailed_sites_dict[found_siteID])
-    
+    set_node_preferences(yamlSpec, detailed_sites_dict[found_siteID])    
     return yamlSpec
