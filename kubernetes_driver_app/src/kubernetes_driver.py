@@ -85,14 +85,24 @@ class K8sDriver(object):
             print('K8sDriver - deployment exception: %s' % e)
             return 400
 
-    # delete deployment by name and namespace
-    def delete_deployment(self, namespace, name):
+    def remove(self, app_name, namespace, serv_dict, dep_dict):
+        core_v1 = client.CoreV1Api()
         apps_v1 = client.AppsV1Api()
         try:
-            print('K8s Driver namespace: %s, name: %s' %(namespace, name))
-            api_response = apps_v1.delete_namespaced_deployment(name=name, namespace=namespace)
-            #pprint(api_response)
+            # delete services by name and namespace
+            for s, info in serv_dict.items():
+                api_response = core_v1.delete_namespaced_service(name=s, namespace=namespace)
+                #pprint(api_response)
+
+            # delete deployments by name and namespace
+            for dep, info in dep_dict.items():
+                api_response = apps_v1.delete_namespaced_deployment(name=dep, namespace=namespace)
+                #pprint(api_response)
+
             return 201
         except client.exceptions.ApiException as e:
-            print('K8sDriver - termination of %s exception: %s' % (name, e))
+            print('K8sDriver - termination of %s exception: %s' % (app_name, e))
             return 400
+
+
+    

@@ -37,7 +37,10 @@ async def process_requests(requests):
 
         elif(req.action == REMOVE_ACTION):
             print('kubernetes_driver_app - agents - termination for requestUUID: %s received' % (req.requestUUID))
-            ret = k8s_driver.delete_deployment(namespace=req.namespace, name=req.name)
+            
+            services_dict = req.yamlSpec['kubernetesSpec']['services']
+            dp_dict = req.yamlSpec['kubernetesSpec']['deployments']
+            ret = k8s_driver.remove(app_name=req.name, namespace=req.namespace, serv_dict=services_dict, dep_dict=dp_dict)
             
             # write to db_consumer topic
             timestamp = json.dumps(datetime.datetime.now(), indent=4, sort_keys=True, default=str)
@@ -46,6 +49,7 @@ async def process_requests(requests):
                 db_rec_str = record_to_string(db_rec)
                 p.produce(topic=kafka_cfg['db_consumer'], value=db_rec_str)
                 p.flush()
+                print('kubernetes_driver_app - agents - termination for requestUUID: %s completed')
             else:
                 print('kubernetes_driver_app - agents - termination for requestUUID: %s failed with return code: %s' % (req.requestUUID, ret))
         
