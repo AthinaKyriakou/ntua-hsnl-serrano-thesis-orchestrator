@@ -21,13 +21,15 @@ def get_site_info(siteID):
     # call to the telemetry endpoint to get info about the available sites
     postPath = os.path.join(telemetry_cfg['endpoint'], telemetry_cfg['node.uri'])
     postPath = os.path.join(postPath, siteID)
-    return requests.get(postPath)
+    res = requests.get(postPath)
+    return res
 
 def get_sites_info():
     # call to the telemetry endpoint to get info about the available sites
     postPath = os.path.join(telemetry_cfg['endpoint'], telemetry_cfg['clusters.uri'])
     print('telemetry post to postPath: %s' %(postPath))
-    return requests.get(postPath)
+    res = requests.get(postPath)
+    return res
 
 def normalized_value(dval, min_observed, max_observed):
     val = (dval - min_observed)/(max_observed - min_observed)
@@ -58,8 +60,9 @@ def find_site(sites_dict, yamlSpec):
             max_RAM = site_available_RAM
         if(site_available_storage > max_storage):
             max_storage = site_available_storage
+        print('Site %s: available RAM: %s, available storage: %s' % (siteID, site_available_RAM, site_available_storage))
 
-    print('max_RAM_GB: %s - max_storage_GB: %s' %(max_RAM, max_storage))
+    #print('max_RAM_GB: %s - max_storage_GB: %s' %(max_RAM, max_storage))
 
     # find optimal site
     app_cores = yamlSpec['appCores']
@@ -125,15 +128,10 @@ def set_node_preferences(yamlSpec, site_dict):
     comp_values_list = sorted(comp_values_list, key=lambda x: x[1], reverse=True)
     #print(comp_values_list)
 
-    #TODO: remove once a proper telemetry API
     worker_nodes = {}
-    if(yamlSpec['orchestrator'] == SWARM):
-        worker_nodes['147.102.22.150'] = site_dict['worker_nodes'][0]
-        worker_nodes['147.102.22.151'] = site_dict['worker_nodes'][1]
-    elif(yamlSpec['orchestrator'] == K8s):
-        worker_nodes['192.168.19.159'] = site_dict['worker_nodes'][0]
-        worker_nodes['192.168.19.160'] = site_dict['worker_nodes'][1]
-    
+    for w in site_dict['worker_nodes']:
+        ip = w['ip']
+        worker_nodes[ip] = w
     #print(worker_nodes)
     
     # find max for normalization
@@ -195,8 +193,7 @@ def dummy_algorithm(yamlSpec):
             print('Resource Optimization Toolkit - rot_algorithm - call to the Telemetry Handler failed')
             raise TelemetryHandlerException('Get request to Telemetry Handler API failed with status code: %s' %(ret_sites.status_code))
         siteID_dict = ast.literal_eval(ret_siteID.content.decode('utf-8'))
-        if(site['label'] != 'Infrastructure B'): #infr B is not implemented in the testbed, TODO: remove once implemented
-            detailed_sites_dict[siteID] = siteID_dict
+        detailed_sites_dict[siteID] = siteID_dict
 
     found_siteID = find_site(detailed_sites_dict, yamlSpec)
     if(found_siteID == None):
@@ -208,7 +205,7 @@ def dummy_algorithm(yamlSpec):
             found_site_orchestrator = site['orchestrator']
             break
 
-    #print('Resource Optimization Toolkit - rot_algorithm - found site id %s, found site orchestrator %s' %(found_siteID, found_site_orchestrator))
+    print('Resource Optimization Toolkit - rot_algorithm - found site id %s, found site orchestrator %s' %(found_siteID, found_site_orchestrator))
 
     if(found_site_orchestrator == 'SWARM'):
         yamlSpec['orchestrator'] = SWARM

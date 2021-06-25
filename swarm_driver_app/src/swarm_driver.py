@@ -3,8 +3,11 @@ import yaml
 import os
 import subprocess
 from config import SWARM_DEPL_DIR
-from helpers import remove_added_labels
+from helpers import remove_added_labels, add_placement_specs
 import copy
+
+PREFERRED = 'preferences'
+IP = 'ip'
 
 class SwarmDriver(object):
     
@@ -37,14 +40,32 @@ class SwarmDriver(object):
     # check if a docker file is needed for custom images
     def deploy(self, requestUUID, dep_dict):
         try:
-            # TODO: pass into configuration file + put UUID in file name
+            # configure the labels in the services
+            print('IN SWAAAAAAARM')
+            swarm_spec = dep_dict['spec']
+            swarm_services = dep_dict['spec']['services']
+            comp_preferences = dep_dict['comp_preferences']
+
+            print('\n\n\n SPEC')
+            print(swarm_spec)
+
+            print('\n\n\n PREFERENCES')
+            print(comp_preferences)
+
+            for s, info in swarm_services.items():
+                nodeIP = comp_preferences[s]
+                info = add_placement_specs(copy.deepcopy(info), IP, nodeIP, PREFERRED)
+
+            # fix db writing for the passed yaml spec
+
+            # create the stack
             stack_name = dep_dict.get('name')
             yamlName = requestUUID + '.yaml'
-            yamlSpec = remove_added_labels(copy.deepcopy(dep_dict))
             compose_file_path = os.path.join(SWARM_DEPL_DIR, yamlName)
             with open(compose_file_path, 'w') as yaml_file:
-                yaml.dump(yamlSpec, yaml_file, default_flow_style=False)
-            subprocess.run('docker stack deploy --compose-file %s --orchestrator swarm %s' %(compose_file_path, stack_name), check=True, shell=True)
+                yaml.dump(swarm_spec, yaml_file, default_flow_style=False)
+            
+            #subprocess.run('docker stack deploy --compose-file %s --orchestrator swarm %s' %(compose_file_path, stack_name), check=True, shell=True)
             print('SwarmDriver - stack %s created' %(stack_name))
             return 201
         except subprocess.CalledProcessError as e:

@@ -23,6 +23,9 @@ async def process_requests(requests):
         print('Orchestrator - data received')
         
         if(req.action == DEPLOY_ACTION):
+            # TODO: remove once telemetry is proper
+            req.yamlSpec['orchestrator'] = SWARM
+
             selected_orchestrator = req.yamlSpec.get('orchestrator')
             name = req.yamlSpec.get('name')
             namespace = req.yamlSpec.get('namespace')

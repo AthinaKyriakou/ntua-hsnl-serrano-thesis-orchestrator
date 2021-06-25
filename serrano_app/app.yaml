@@ -38,7 +38,7 @@ app_comp_reqs:
     cores: 1
 
 swarmSpec:
-  version: "3"
+  version: '3.3'
   services:
     redis:
       image: redis:alpine
@@ -66,7 +66,7 @@ swarmSpec:
     vote:
       image: dockersamples/examplevotingapp_vote:before
       ports:
-        - 5000:80
+        - 5002:80
       networks:
         - frontend
       depends_on:
