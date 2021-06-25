@@ -4,7 +4,7 @@ import yaml
 from kubernetes import client
 from kubernetes.client import Configuration
 from kubernetes.config import kube_config
-from kubernetes_driver_app.src.helpers import add_node_affinity
+from helpers import add_node_affinity
 import copy
 
 SUCCESS = 'SUCCESS'
@@ -55,35 +55,31 @@ class K8sDriver(object):
         apps_v1 = client.AppsV1Api()
         try:
             # create namespace
-            api_response = core_v1.create_namespace(namespace=namespace)
+            api_response = core_v1.create_namespace(client.V1Namespace(metadata=client.V1ObjectMeta(name=namespace)))
             print('K8sDriver - namespace %s created with status=%s' % (namespace, api_response.metadata.name))
 
             k8s_services = dep_dict['spec']['services']
             k8s_deployments = dep_dict['spec']['deployments']
             comp_preferences = dep_dict['comp_preferences']
 
-            print('\n\n@@@@ Deployments')
-            print(k8s_deployments)
-
-            print('\n\n@@@@ Preferences')
-            print(comp_preferences)
-
             # configure the labels in the deployments
-            for comp, info in k8s_deployments:
+            for dep, info in k8s_deployments.items():
                 yamlSpec = info['yamlSpec']
-                nodeIP = comp_preferences[comp]
+                nodeIP = comp_preferences[dep]
                 info['yamlSpec'] = add_node_affinity(copy.deepcopy(yamlSpec), IP, nodeIP, IN_OPP, PREFERRED, 100)
 
-
             # create the services
-
+            for s, info in k8s_services.items():
+                service_dict = info['yamlSpec']
+                api_response = core_v1.create_namespaced_service(body=service_dict, namespace=namespace)
+                print('K8sDriver - service %s created with status=%s' % (s, api_response.metadata.name))
 
             # create the deployments
-
-
-            #api_response = apps_v1.create_namespaced_deployment(body=dep_dict, namespace=namespace)
-            #pprint(api_response)
-            #print('K8sDriver - deployment created with status=%s' % api_response.metadata.name)
+            for d, info in k8s_deployments.items():
+                dep_dict = info['yamlSpec']
+                api_response = apps_v1.create_namespaced_deployment(body=dep_dict, namespace=namespace)
+                print('K8sDriver - deployment %s created with status=%s' % (d, api_response.metadata.name))
+            
             return 201
         except client.exceptions.ApiException as e:
             print('K8sDriver - deployment exception: %s' % e)
