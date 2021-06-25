@@ -6,6 +6,7 @@ from kubernetes.client import Configuration
 from kubernetes.config import kube_config
 from helpers import add_node_affinity
 import copy
+import ast
 
 SUCCESS = 'SUCCESS'
 FAILURE = 'FAILURE'
@@ -49,14 +50,27 @@ class K8sDriver(object):
             if(i.metadata.namespace == namespace):
                 print('%s\t%s\t%s' % (i.status.pod_ip, i.metadata.namespace, i.metadata.name))
     
+    
+    def check_if_namespace_exists(self, namespace):
+        core_v1 = client.CoreV1Api()
+        namespace_list = core_v1.list_namespace()
+        for n in namespace_list.items:
+            name = n.metadata.name
+            if(name == namespace):
+                return True
+        return False
+
+
     def deploy(self, dep_dict, namespace):
-        # TODO: select spec file to keep, add preference labels if specified, create each service & deployment
         core_v1 = client.CoreV1Api()
         apps_v1 = client.AppsV1Api()
         try:
-            # create namespace
-            api_response = core_v1.create_namespace(client.V1Namespace(metadata=client.V1ObjectMeta(name=namespace)))
-            print('K8sDriver - namespace %s created with status=%s' % (namespace, api_response.metadata.name))
+            # create namespace, if it does not exist
+            if(not self.check_if_namespace_exists(namespace)):
+                api_response = core_v1.create_namespace(client.V1Namespace(metadata=client.V1ObjectMeta(name=namespace)))
+                print('K8sDriver - namespace %s created with status=%s' % (namespace, api_response.metadata.name))
+            else:
+                print('K8sDriver - namespace %s exists' % namespace)
 
             k8s_services = dep_dict['spec']['services']
             k8s_deployments = dep_dict['spec']['deployments']

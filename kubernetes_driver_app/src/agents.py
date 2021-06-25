@@ -49,7 +49,7 @@ async def process_requests(requests):
                 db_rec_str = record_to_string(db_rec)
                 p.produce(topic=kafka_cfg['db_consumer'], value=db_rec_str)
                 p.flush()
-                print('kubernetes_driver_app - agents - termination for requestUUID: %s completed')
+                print('kubernetes_driver_app - agents - termination for requestUUID: %s completed' % (req.requestUUID))
             else:
                 print('kubernetes_driver_app - agents - termination for requestUUID: %s failed with return code: %s' % (req.requestUUID, ret))
         
