@@ -21,8 +21,8 @@ async def process_requests(requests):
             ret = k8s_driver.deploy(dep_dict=req.yamlSpec, namespace=req.namespace)
 
             # write to db_consumer topic
-            namespace = req.yamlSpec.get('namespace')
-            name = req.yamlSpec.get('name')
+            namespace = req.namespace
+            name = req.name
             timestamp = json.dumps(datetime.datetime.now(), indent=4, sort_keys=True, default=str)
             
             # TODO: not best practice to query DB
