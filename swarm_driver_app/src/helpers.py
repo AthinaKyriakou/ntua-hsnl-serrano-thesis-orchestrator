@@ -30,5 +30,13 @@ def remove_added_labels(yamlSpec):
     yamlSpec.pop('orchestrator')
     return yamlSpec
 
-#def add_placement_specs(spec, key, value, type):
-    # TODO: write
+def add_placement_specs(spec, key, value, type):
+    if(type == PREFERRED):
+        preferences_list = []
+        dict = {}
+        dict['spread'] = 'node.labels.' + key + ' == ' + value 
+        preferences_list.append(dict)
+    if(spec['deploy'].get('placement') == None):
+        spec['deploy']['placement'] = {}
+    spec['deploy']['placement']['preferences'] = preferences_list
+    return spec

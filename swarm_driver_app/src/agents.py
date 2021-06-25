@@ -3,7 +3,7 @@ from confluent_kafka import Producer
 from config import kafka_cfg, DEPLOYED_STATE, FAILED_STATE, REMOVED_STATE, REMOVED_STATE, DEPLOY_ACTION, REMOVE_ACTION, SWARM, mongodb_cfg
 from models import SwarmRecord, DatabaseRecord
 from swarm_driver import SwarmDriver
-from helpers import record_to_string, query_by_stack_name
+from helpers import record_to_string, query_by_stack_name, query_by_requestUUID
 import datetime
 import json
 
@@ -18,25 +18,29 @@ async def process_requests(requests):
         
         if(req.action == DEPLOY_ACTION):
             print('swarm_driver_app - agents - data for requestUUID: %s received' % (req.requestUUID))
-            ret = swarm_driver.deploy(req.requestUUID, dep_dict=req.yamlSpec)
+
+            name = req.name
+            namespace = req.namespace
+            ret = swarm_driver.deploy(req.requestUUID, req.yamlSpec, name)
 
             # mark the previous version of the stack in the db, if exists, as removed
             prev_version_dict = query_by_stack_name(mongodb_cfg['connection.uri'], mongodb_cfg['db_name'], mongodb_cfg['db_collection'], req.name, SWARM)
             if(prev_version_dict != None):
                 timestamp = json.dumps(datetime.datetime.now(), indent=4, sort_keys=True, default=str)
-                db_rec = DatabaseRecord(requestUUID=prev_version_dict.get('requestUUID'), namespace=prev_version_dict.get('namespace'), name=prev_version_dict.get('name'), state=REMOVED_STATE, resource=SWARM, yamlSpec=prev_version_dict.get('yamlSpec'), timestamp=timestamp)
+                db_rec = DatabaseRecord(requestUUID=prev_version_dict.get('requestUUID'), namespace=namespace, name=name, state=REMOVED_STATE, resource=SWARM, yamlSpec=prev_version_dict.get('yamlSpec'), timestamp=timestamp)
                 db_rec_str = record_to_string(db_rec)
                 p.produce(topic=kafka_cfg['db_consumer'], value=db_rec_str)
                 p.flush()
 
             # write to db_consumer topic
-            namespace = req.yamlSpec.get('namespace')       # no namespace supported for swarm, should be none
-            name = req.yamlSpec.get('name')
             timestamp = json.dumps(datetime.datetime.now(), indent=4, sort_keys=True, default=str)
+
+            # TODO: not best practice to query DB
+            db_yamlSpec = query_by_requestUUID(mongodb_cfg['connection.uri'], mongodb_cfg['db_name'], mongodb_cfg['db_collection'], req.requestUUID)['yamlSpec']
             if(ret==201):
-                db_rec = DatabaseRecord(requestUUID=req.requestUUID, namespace=namespace, name=name, state=DEPLOYED_STATE, resource=SWARM, yamlSpec=req.yamlSpec, timestamp=timestamp)
+                db_rec = DatabaseRecord(requestUUID=req.requestUUID, namespace=namespace, name=name, state=DEPLOYED_STATE, resource=SWARM, yamlSpec=db_yamlSpec, timestamp=timestamp)
             else:
-                db_rec = DatabaseRecord(requestUUID=req.requestUUID, namespace=namespace, name=name, state=FAILED_STATE, resource=SWARM, yamlSpec=req.yamlSpec, timestamp=timestamp)
+                db_rec = DatabaseRecord(requestUUID=req.requestUUID, namespace=namespace, name=name, state=FAILED_STATE, resource=SWARM, yamlSpec=db_yamlSpec, timestamp=timestamp)
             db_rec_str = record_to_string(db_rec)
             p.produce(topic=kafka_cfg['db_consumer'], value=db_rec_str)
             p.flush()

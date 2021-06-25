@@ -24,11 +24,12 @@ async def process_requests(requests):
         
         if(req.action == DEPLOY_ACTION):
             # TODO: remove once telemetry is proper
-            req.yamlSpec['orchestrator'] = SWARM
+            #req.yamlSpec['orchestrator'] = SWARM
 
             selected_orchestrator = req.yamlSpec.get('orchestrator')
             name = req.yamlSpec.get('name')
             namespace = req.yamlSpec.get('namespace')
+
             filtered_yamlSpec = filter_yamlSpec(copy.deepcopy(req.yamlSpec), selected_orchestrator)
 
             if(selected_orchestrator == SWARM):
