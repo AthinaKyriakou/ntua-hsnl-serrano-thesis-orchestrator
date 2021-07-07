@@ -18,21 +18,21 @@ K8s = 'k8s'
 kafka_cfg = {
     # kafka producer
     # local:
-    'bootstrap.servers': 'localhost:9092',
+    #'bootstrap.servers': 'localhost:9092',
     # prod:
-    #'bootstrap.servers': '147.102.16.113:9092',
+    'bootstrap.servers': '147.102.16.113:9092',
 
     # k8s driver
     # local: 
-    'kubeconfig_yaml': '/home/athina/.kube/config',
+    #'kubeconfig_yaml': '/home/athina/.kube/config',
     # prod:
-    #'kubeconfig_yaml': '/home/telis/.kube/config',
+    'kubeconfig_yaml': '/home/telis/.kube/config',
 
     # faust config
     # local: 
-    'broker': 'kafka://localhost:9092',
+    #'broker': 'kafka://localhost:9092',
     # prod:
-    #'broker': 'kafka://147.102.16.113:9092',
+    'broker': 'kafka://147.102.16.113:9092',
     'version': 1,
     'project': 'ntua_diploma_thesis',
     'origin': 'src',

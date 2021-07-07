@@ -33,9 +33,9 @@ kafka_cfg = {
     # kafka producer, k8s driver
     'bootstrap.servers': 'localhost:9092',
     # for local: 
-    'kubeconfig_yaml': '/home/athina/.kube/config',
+    #'kubeconfig_yaml': '/home/athina/.kube/config',
     # for prod:
-    #'kubeconfig_yaml': '/home/serrano/.kube/config',
+    'kubeconfig_yaml': '/home/serrano/.kube/config',
     'group.id': 'ntua_diploma_thesis',
     'auto.offset.reset': 'smallest',
     'namespace': ['default'],

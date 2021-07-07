@@ -20,15 +20,15 @@ SWARM_DEPL_DIR = os.path.join(os.path.abspath(os.getcwd()), 'swarm_deployments')
 kafka_cfg = {
     # kafka producer
     # local:
-    'bootstrap.servers': 'localhost:9092',
+    #'bootstrap.servers': 'localhost:9092',
     # prod:
-    #'bootstrap.servers': '147.102.16.113:9092',
+    'bootstrap.servers': '147.102.16.113:9092',
 
     # faust config
     # local: 
-    'broker': 'kafka://localhost:9092',
+    #'broker': 'kafka://localhost:9092',
     # prod:
-    #'broker': 'kafka://147.102.16.113:9092',
+    'broker': 'kafka://147.102.16.113:9092',
     'version': 1,
     'project': 'ntua_diploma_thesis',
     'origin': 'src',
