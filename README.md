@@ -24,6 +24,7 @@
 | Folder/File                       | Description                                  |
 | --------------------------------- | -------------------------------------------- |
 | /serrano_app/docker-compose.yaml  | environment/KAFKA_ADVERTISED_LISTENERS       |
+| /serrano_app/flask-start.sh       | flask run                                    |
 | /serrano_app/config/              | kafka_cfg/kubeconfig_yaml                    |
 | /kubernetes_driver_app/config/    | kafka_cfg/bootstrap.servers                  |
 | /kubernetes_driver_app/config/    | kafka_cfg/kubeconfig_yaml                    |
@@ -34,6 +35,7 @@
 ## Quickstart
 1. Run Docker Compose on a terminal:
     ```bash
+    cd serrano_app/
     docker-compose up -d
     ``` 
 
