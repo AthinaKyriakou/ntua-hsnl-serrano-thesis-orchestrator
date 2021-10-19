@@ -4,7 +4,7 @@ export FLASK_APP=flask_app
 cd ./src
 
 # local:
-flask run
+#flask run
 
 # prod:
-# flask run --host=147.102.16.113
+flask run --host=147.102.16.113

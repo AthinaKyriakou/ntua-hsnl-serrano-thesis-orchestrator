@@ -13,6 +13,7 @@ k8s_driver = K8sDriver(kubeconfig_yaml=kafka_cfg['kubeconfig_yaml'])
 
 @faust_app.agent(k8s_topic)
 async def process_requests(requests):
+    print('HOLAAAAAAAAAAA22222')
     p = Producer({'bootstrap.servers': kafka_cfg['bootstrap.servers']})
     async for req in requests:
         
