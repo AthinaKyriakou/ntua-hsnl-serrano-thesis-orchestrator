@@ -9,6 +9,7 @@ namespace: vote
 # orchestrator: k8s
 
 # TODO: might need to add in the required too
+
 # app requirements
 appCores: 2 
 appRAMGB: 2
@@ -130,6 +131,7 @@ swarmSpec:
 
 # kubectl create namespace vote
 # 4 services - 5 deployments
+
 kubernetesSpec:
   services:
     db:
@@ -149,7 +151,6 @@ kubernetesSpec:
             targetPort: 5432
           selector:
             app: db
-
     redis:
       yamlSpec:
         apiVersion: v1
@@ -167,7 +168,6 @@ kubernetesSpec:
             targetPort: 6379
           selector:
             app: redis
-
     result:
       yamlSpec:
         apiVersion: v1
@@ -186,7 +186,6 @@ kubernetesSpec:
             nodePort: 31001
           selector:
             app: result
-
     vote:
       yamlSpec:
         apiVersion: v1
@@ -205,7 +204,6 @@ kubernetesSpec:
             nodePort: 31000
           selector:
             app: vote
-
   deployments:
     db:
       yamlSpec:
@@ -243,7 +241,6 @@ kubernetesSpec:
               volumes:
               - name: db-data
                 emptyDir: {} 
-
     redis:
       yamlSpec:
         apiVersion: apps/v1
@@ -275,7 +272,6 @@ kubernetesSpec:
               volumes:
               - name: redis-data
                 emptyDir: {} 
-
     result:
       yamlSpec:
         apiVersion: apps/v1
@@ -301,7 +297,6 @@ kubernetesSpec:
                 ports:
                 - containerPort: 80
                   name: result
-
     vote:
       yamlSpec:
         apiVersion: apps/v1
@@ -327,7 +322,6 @@ kubernetesSpec:
                 ports:
                 - containerPort: 80
                   name: vote
-
     worker:
       yamlSpec:
         apiVersion: apps/v1

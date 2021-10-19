@@ -11,7 +11,6 @@
   ```bash
   pip install -r requirements.txt
   ```
-6. Fix configs 
 
 ### For a Production Environment
 1. Create a [swarm cluster](https://docs.docker.com/engine/swarm/swarm-tutorial/create-swarm/) and clone the repo to the master node
@@ -20,7 +19,17 @@
   ```bash
   pip install -r requirements_production.txt
   ``` 
-4. Fix configs 
+
+### Configs to switch from prod to local and vice versa
+| Folder/File                       | Description                                  |
+| --------------------------------- | -------------------------------------------- |
+| /serrano_app/docker-compose.yaml  | environment/KAFKA_ADVERTISED_LISTENERS       |
+| /serrano_app/config/              | kafka_cfg/kubeconfig_yaml                    |
+| /kubernetes_driver_app/config/    | kafka_cfg/bootstrap.servers                  |
+| /kubernetes_driver_app/config/    | kafka_cfg/kubeconfig_yaml                    |
+| /kubernetes_driver_app/config/    | kafka_cfg/broker                             |
+| /swarm_driver_app/config/         | kafka_cfg/bootstrap.servers                  |
+| /swarm_driver_app/config/         | kafka_cfg/broker                             |
 
 ## Quickstart
 1. Run Docker Compose on a terminal:
