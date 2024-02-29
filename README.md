@@ -1,4 +1,4 @@
-# [add thesis title]
+# Development of Resource Orchestration Mechanisms for Heterogeneous Computing Infrastructures
 
 ## Installations
 
