@@ -1,5 +1,7 @@
 # Development of Resource Orchestration Mechanisms for Heterogeneous Computing Infrastructures
 
+Thesis(text mostly in greek with abstract in english): [link](https://dspace.lib.ntua.gr/xmlui/handle/123456789/55086)
+
 ## Installations
 
 ### For Local Development in Linux
